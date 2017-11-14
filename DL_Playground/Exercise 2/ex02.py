@@ -71,6 +71,7 @@ def drop_out(input,name="dropout"):
 
 learning_rate = [0.1,0.01,0.001,0.0001]
 logs_path = "/tmp/mnist/1"
+#tensorboard --logdir=run1:/tmp/mnist/1,run2:/tmp/mnist/1 --port=6006
 
 
 
