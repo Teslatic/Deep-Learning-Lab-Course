@@ -109,13 +109,14 @@ train_step = tf.train.GradientDescentOptimizer(0.1).minimize(cross_entropy)
 correct_prediction = tf.equal(tf.argmax(y_conv,1),tf.argmax(y_,1))
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
+training_summary = tf.summary.scalar("training_accuracy",accuracy)
+testing_summary = tf.summary.scalar("testing_summary",accuracy)
 
 # create summaries for cost and accuracy
-tf.summary.scalar("cost", cross_entropy)
-tf.summary.scalar("accuracy", accuracy)
+xent_summary = tf.summary.scalar("X-Entropy", cross_entropy)
 
 # merge all summaries into a single operation
-summary_op = tf.summary.merge_all()
+#summary_op = tf.summary.merge_all()
 
 with tf.Session() as sess:
 	# variables need to be initialized before we can use them
@@ -129,16 +130,34 @@ with tf.Session() as sess:
 	# number of batches in one epoch
 	#batch_count = int(mnist.train.num_examples/batch_size)
         
-	for i in range(20000):
+	for i in range(10000):
 		batch_x, batch_y = mnist.train.next_batch(100)           
-		_, summary = sess.run([train_step, summary_op], feed_dict={x: batch_x, y_:
-																batch_y,keep_prob: 0.5})
-		train_accuracy = accuracy.eval(feed_dict={x: batch_x, y_: batch_y, keep_prob: 0.5})
+		#_, summary = sess.run([train_step, summary_op], feed_dict={x: batch_x, y_:
+		#														batch_y,keep_prob: 0.5})
+		#train_accuracy = accuracy.eval(feed_dict={x: batch_x, y_: batch_y, keep_prob: 0.5})
+	
+		train_step.run(feed_dict={x: batch_x, y_: batch_y, keep_prob: 0.5})
+		
+		if i%50==0:
+			train_acc, train_summ = sess.run([accuracy, training_summary],
+									feed_dict={x:batch_x, y_:batch_y, keep_prob:0.5})
+			writer.add_summary(train_summ,i)
+			
+			xent, cost_summ = sess.run([cross_entropy, xent_summary], feed_dict={x:batch_x,
+																		y_: batch_y, keep_prob:0.5})
+			writer.add_summary(cost_summ,i)
+			
+			test_acc, test_summ = sess.run([accuracy, testing_summary],feed_dict={
+				x:mnist.test.images,y_:mnist.test.labels,keep_prob: 1})
+			writer.add_summary(test_summ,i)
+
+
+
 
 		# write log 
-		writer.add_summary(summary, 0 * 20000 + i)
+		#writer.add_summary(summary, 0 * 20000 + i)
 		if i%100 == 0:
-			print('step %d, training accuracy %g' % (i, train_accuracy))
+			print('step %d, training accuracy %g' % (i, train_acc))
 			#if epoch % 5 == 0:
 			#print("Epoch: ".format(epoch))
 	print("Accuracy: {}".format(accuracy.eval(feed_dict={

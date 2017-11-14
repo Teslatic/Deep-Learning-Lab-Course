@@ -88,6 +88,6 @@ with tf.Session() as sess:
             writer.add_summary(summary, epoch * batch_count + i)
             
         if epoch % 5 == 0: 
-            print("Epoch: ".format(epoch))
+            print("Epoch: {}".format(epoch))
     print("Accuracy: ".format(accuracy.eval(feed_dict={x: mnist.test.images, y_: mnist.test.labels})))
     print("done")
