@@ -68,14 +68,19 @@ def drop_out(input,name="dropout"):
 
 
 ### MAIN ####
-
+EPOCHS = 10
 learning_rate = [0.1,0.01,0.001,0.0001]
 logs_path = "/tmp/mnist/1"
-#tensorboard --logdir=run1:/tmp/mnist/1,run2:/tmp/mnist/1 --port=6006
+'''
+tensorboard --logdir=run1:/tmp/mnist/1,run2:/tmp/mnist/1 --port=6006
+'''
 
 
+list_cost = []
+list_train_acc = []
 
-# setup data
+
+# setup data 55000 training samples, 10000 test samples
 
 mnist = input_data.read_data_sets("MNIST_data/", one_hot = True)
 
@@ -120,53 +125,62 @@ xent_summary = tf.summary.scalar("X-Entropy", cross_entropy)
 #summary_op = tf.summary.merge_all()
 
 with tf.Session() as sess:
-	# variables need to be initialized before we can use them
-	#sess.run(tf.initialize_all_variables())
+	# initialize global variables
 	sess.run(tf.global_variables_initializer())
 	# create log writer object
 	writer = tf.summary.FileWriter(logs_path, graph=tf.get_default_graph())
         
-	# perform training cycles
-	# for epoch in range(5):
-	# number of batches in one epoch
-	#batch_count = int(mnist.train.num_examples/batch_size)
-        
-	for i in range(10000):
-		batch_x, batch_y = mnist.train.next_batch(100)           
-		#_, summary = sess.run([train_step, summary_op], feed_dict={x: batch_x, y_:
-		#														batch_y,keep_prob: 0.5})
-		#train_accuracy = accuracy.eval(feed_dict={x: batch_x, y_: batch_y, keep_prob: 0.5})
 	
-		train_step.run(feed_dict={x: batch_x, y_: batch_y, keep_prob: 0.5})
+        
+
+	# epoch loop
+	for ep in range(EPOCHS):
+		print("Epoch: {}".format(ep))
+		# batch loop, 55000 samples, batchsize is 50 -> 1100 training loops per epoch
+		for i in range(1100):
+			batch_x, batch_y = mnist.train.next_batch(50)           
+			train_step.run(feed_dict={x: batch_x, y_: batch_y, keep_prob: 0.5})
 		
-		if i%50==0:
-			train_acc, train_summ = sess.run([accuracy, training_summary],
-									feed_dict={x:batch_x, y_:batch_y, keep_prob:0.5})
-			writer.add_summary(train_summ,i)
+			if i%50==0:
+				train_acc, train_summ = sess.run([accuracy, training_summary],
+										feed_dict={x:batch_x, y_:batch_y, keep_prob:0.5})
+				writer.add_summary(train_summ,i)
+				list_train_acc.append(train_acc)
 			
-			xent, cost_summ = sess.run([cross_entropy, xent_summary], feed_dict={x:batch_x,
-																		y_: batch_y, keep_prob:0.5})
-			writer.add_summary(cost_summ,i)
+				xent, cost_summ = sess.run([cross_entropy, xent_summary], feed_dict={x:batch_x,
+																			y_: batch_y, keep_prob:0.5})
+				writer.add_summary(cost_summ,i)
+				list_cost.append(xent)
 			
-			test_acc, test_summ = sess.run([accuracy, testing_summary],feed_dict={
-				x:mnist.test.images,y_:mnist.test.labels,keep_prob: 1})
-			writer.add_summary(test_summ,i)
-
-
-
-
-		# write log 
-		#writer.add_summary(summary, 0 * 20000 + i)
-		if i%100 == 0:
-			print('step %d, training accuracy %g' % (i, train_acc))
+				
+		
+			if i%50 == 0:
+				print('step {}, training accuracy {:.4f}, cost {:.4f}'.format(i, train_acc, xent))
+				
 			#if epoch % 5 == 0:
-			#print("Epoch: ".format(epoch))
-	print("Accuracy: {}".format(accuracy.eval(feed_dict={
-			x:mnist.test.images,y_:mnist.test.labels,keep_prob: 1})))
+				
+		
+		test_acc, test_summ = sess.run([accuracy, testing_summary],feed_dict={
+					x:mnist.test.images,y_:mnist.test.labels,keep_prob: 1})
+		writer.add_summary(test_summ,i)
+		print("Accuracy in epoch {}: {}".format(ep,accuracy.eval(feed_dict={
+				x:mnist.test.images,y_:mnist.test.labels,keep_prob: 1})))		
 	print("done")
 
+plt.figure()
+plt.plot(list_train_acc)
+plt.show()
 		
 		
+
+
+
+
+
+
+
+
+
 		
 		
 		
