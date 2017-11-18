@@ -1,0 +1,320 @@
+(virtual_tensorflow_cpu) [vloeth@tfpool17 Exercise 2]$ python3 ex02.py 
+loading data...
+Extracting MNIST_data/train-images-idx3-ubyte.gz
+Extracting MNIST_data/train-labels-idx1-ubyte.gz
+Extracting MNIST_data/t10k-images-idx3-ubyte.gz
+Extracting MNIST_data/t10k-labels-idx1-ubyte.gz
+...loading finished!
+starting training now with filter depth of 16 ...
+2017-11-18 17:24:26.606872: I tensorflow/core/platform/cpu_feature_guard.cc:137] Your CPU supports instructions that this TensorFlow binary was not compiled to use: SSE4.1 SSE4.2 AVX
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.7000	Epoch:	0
+Training Accuracy:	0.1285	Testing Accuracy:	0.1010	Cost:	2.2907
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.7000	Epoch:	1
+Training Accuracy:	0.1265	Testing Accuracy:	0.1135	Cost:	2.2922
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.7000	Epoch:	2
+Training Accuracy:	0.1273	Testing Accuracy:	0.0980	Cost:	2.2920
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.7000	Epoch:	3
+Training Accuracy:	0.1285	Testing Accuracy:	0.1135	Cost:	2.2916
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.7000	Epoch:	4
+Training Accuracy:	0.1277	Testing Accuracy:	0.1135	Cost:	2.2921
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.7000	Epoch:	5
+Training Accuracy:	0.1276	Testing Accuracy:	0.1028	Cost:	2.2922
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.7000	Epoch:	6
+Training Accuracy:	0.1270	Testing Accuracy:	0.1028	Cost:	2.2919
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.7000	Epoch:	7
+Training Accuracy:	0.1280	Testing Accuracy:	0.1010	Cost:	2.2920
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.7000	Epoch:	8
+Training Accuracy:	0.1281	Testing Accuracy:	0.1028	Cost:	2.2919
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.7000	Epoch:	9
+Training Accuracy:	0.1279	Testing Accuracy:	0.1135	Cost:	2.2921
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.7000	Epoch:	10
+Training Accuracy:	0.1273	Testing Accuracy:	0.1135	Cost:	2.2920
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.7000	Epoch:	11
+Training Accuracy:	0.1266	Testing Accuracy:	0.1028	Cost:	2.2917
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.7000	Epoch:	12
+Training Accuracy:	0.1273	Testing Accuracy:	0.1010	Cost:	2.2918
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.7000	Epoch:	13
+Training Accuracy:	0.1269	Testing Accuracy:	0.1135	Cost:	2.2918
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.7000	Epoch:	14
+Training Accuracy:	0.1292	Testing Accuracy:	0.1135	Cost:	2.2916
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.7000	Epoch:	15
+Training Accuracy:	0.1269	Testing Accuracy:	0.1135	Cost:	2.2919
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.7000	Epoch:	16
+Training Accuracy:	0.1277	Testing Accuracy:	0.1135	Cost:	2.2917
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.7000	Epoch:	17
+Training Accuracy:	0.1276	Testing Accuracy:	0.1010	Cost:	2.2922
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.7000	Epoch:	18
+Training Accuracy:	0.1284	Testing Accuracy:	0.1010	Cost:	2.2916
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.7000	Epoch:	19
+Training Accuracy:	0.1283	Testing Accuracy:	0.1028	Cost:	2.2918
+------------------------------------------------------------------------------
+Traing with Filter depth 16 and learning rate 0.7000 done after 7.7065 min
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.1000	Epoch:	0
+Training Accuracy:	0.9036	Testing Accuracy:	0.9638	Cost:	0.3063
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.1000	Epoch:	1
+Training Accuracy:	0.9672	Testing Accuracy:	0.9749	Cost:	0.1112
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.1000	Epoch:	2
+Training Accuracy:	0.9743	Testing Accuracy:	0.9828	Cost:	0.0817
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.1000	Epoch:	3
+Training Accuracy:	0.9799	Testing Accuracy:	0.9833	Cost:	0.0648
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.1000	Epoch:	4
+Training Accuracy:	0.9826	Testing Accuracy:	0.9868	Cost:	0.0569
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.1000	Epoch:	5
+Training Accuracy:	0.9841	Testing Accuracy:	0.9881	Cost:	0.0510
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.1000	Epoch:	6
+Training Accuracy:	0.9858	Testing Accuracy:	0.9856	Cost:	0.0463
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.1000	Epoch:	7
+Training Accuracy:	0.9873	Testing Accuracy:	0.9876	Cost:	0.0422
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.1000	Epoch:	8
+Training Accuracy:	0.9879	Testing Accuracy:	0.9890	Cost:	0.0391
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.1000	Epoch:	9
+Training Accuracy:	0.9891	Testing Accuracy:	0.9881	Cost:	0.0356
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.1000	Epoch:	10
+Training Accuracy:	0.9889	Testing Accuracy:	0.9893	Cost:	0.0327
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.1000	Epoch:	11
+Training Accuracy:	0.9905	Testing Accuracy:	0.9894	Cost:	0.0317
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.1000	Epoch:	12
+Training Accuracy:	0.9904	Testing Accuracy:	0.9892	Cost:	0.0302
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.1000	Epoch:	13
+Training Accuracy:	0.9905	Testing Accuracy:	0.9906	Cost:	0.0295
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.1000	Epoch:	14
+Training Accuracy:	0.9910	Testing Accuracy:	0.9905	Cost:	0.0260
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.1000	Epoch:	15
+Training Accuracy:	0.9923	Testing Accuracy:	0.9903	Cost:	0.0249
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.1000	Epoch:	16
+Training Accuracy:	0.9921	Testing Accuracy:	0.9911	Cost:	0.0244
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.1000	Epoch:	17
+Training Accuracy:	0.9930	Testing Accuracy:	0.9906	Cost:	0.0233
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.1000	Epoch:	18
+Training Accuracy:	0.9930	Testing Accuracy:	0.9914	Cost:	0.0222
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.1000	Epoch:	19
+Training Accuracy:	0.9929	Testing Accuracy:	0.9914	Cost:	0.0216
+------------------------------------------------------------------------------
+Traing with Filter depth 16 and learning rate 0.1000 done after 15.7068 min
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.0100	Epoch:	0
+Training Accuracy:	0.6310	Testing Accuracy:	0.9143	Cost:	1.1022
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.0100	Epoch:	1
+Training Accuracy:	0.8900	Testing Accuracy:	0.9431	Cost:	0.3621
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.0100	Epoch:	2
+Training Accuracy:	0.9211	Testing Accuracy:	0.9535	Cost:	0.2657
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.0100	Epoch:	3
+Training Accuracy:	0.9332	Testing Accuracy:	0.9606	Cost:	0.2230
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.0100	Epoch:	4
+Training Accuracy:	0.9411	Testing Accuracy:	0.9656	Cost:	0.1948
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.0100	Epoch:	5
+Training Accuracy:	0.9460	Testing Accuracy:	0.9676	Cost:	0.1753
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.0100	Epoch:	6
+Training Accuracy:	0.9500	Testing Accuracy:	0.9702	Cost:	0.1616
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.0100	Epoch:	7
+Training Accuracy:	0.9542	Testing Accuracy:	0.9702	Cost:	0.1534
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.0100	Epoch:	8
+Training Accuracy:	0.9564	Testing Accuracy:	0.9735	Cost:	0.1409
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.0100	Epoch:	9
+Training Accuracy:	0.9594	Testing Accuracy:	0.9747	Cost:	0.1342
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.0100	Epoch:	10
+Training Accuracy:	0.9597	Testing Accuracy:	0.9751	Cost:	0.1287
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.0100	Epoch:	11
+Training Accuracy:	0.9627	Testing Accuracy:	0.9769	Cost:	0.1231
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.0100	Epoch:	12
+Training Accuracy:	0.9633	Testing Accuracy:	0.9774	Cost:	0.1156
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.0100	Epoch:	13
+Training Accuracy:	0.9654	Testing Accuracy:	0.9770	Cost:	0.1145
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.0100	Epoch:	14
+Training Accuracy:	0.9664	Testing Accuracy:	0.9790	Cost:	0.1096
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.0100	Epoch:	15
+Training Accuracy:	0.9684	Testing Accuracy:	0.9797	Cost:	0.1047
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.0100	Epoch:	16
+Training Accuracy:	0.9687	Testing Accuracy:	0.9788	Cost:	0.0998
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.0100	Epoch:	17
+Training Accuracy:	0.9685	Testing Accuracy:	0.9802	Cost:	0.0988
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.0100	Epoch:	18
+Training Accuracy:	0.9711	Testing Accuracy:	0.9810	Cost:	0.0942
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.0100	Epoch:	19
+Training Accuracy:	0.9719	Testing Accuracy:	0.9816	Cost:	0.0925
+------------------------------------------------------------------------------
+Traing with Filter depth 16 and learning rate 0.0100 done after 23.6310 min
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.0010	Epoch:	0
+Training Accuracy:	0.1245	Testing Accuracy:	0.3230	Cost:	2.3070
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.0010	Epoch:	1
+Training Accuracy:	0.2280	Testing Accuracy:	0.5603	Cost:	2.1892
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.0010	Epoch:	2
+Training Accuracy:	0.3871	Testing Accuracy:	0.7185	Cost:	1.9028
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.0010	Epoch:	3
+Training Accuracy:	0.5740	Testing Accuracy:	0.8117	Cost:	1.3470
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.0010	Epoch:	4
+Training Accuracy:	0.6923	Testing Accuracy:	0.8617	Cost:	0.9588
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.0010	Epoch:	5
+Training Accuracy:	0.7543	Testing Accuracy:	0.8826	Cost:	0.7719
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.0010	Epoch:	6
+Training Accuracy:	0.7907	Testing Accuracy:	0.8959	Cost:	0.6624
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.0010	Epoch:	7
+Training Accuracy:	0.8153	Testing Accuracy:	0.9036	Cost:	0.5934
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.0010	Epoch:	8
+Training Accuracy:	0.8342	Testing Accuracy:	0.9132	Cost:	0.5422
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.0010	Epoch:	9
+Training Accuracy:	0.8450	Testing Accuracy:	0.9201	Cost:	0.5033
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.0010	Epoch:	10
+Training Accuracy:	0.8564	Testing Accuracy:	0.9236	Cost:	0.4692
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.0010	Epoch:	11
+Training Accuracy:	0.8645	Testing Accuracy:	0.9272	Cost:	0.4441
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.0010	Epoch:	12
+Training Accuracy:	0.8728	Testing Accuracy:	0.9311	Cost:	0.4200
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.0010	Epoch:	13
+Training Accuracy:	0.8777	Testing Accuracy:	0.9321	Cost:	0.4015
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.0010	Epoch:	14
+Training Accuracy:	0.8827	Testing Accuracy:	0.9354	Cost:	0.3858
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.0010	Epoch:	15
+Training Accuracy:	0.8878	Testing Accuracy:	0.9376	Cost:	0.3741
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.0010	Epoch:	16
+Training Accuracy:	0.8909	Testing Accuracy:	0.9397	Cost:	0.3631
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.0010	Epoch:	17
+Training Accuracy:	0.8920	Testing Accuracy:	0.9427	Cost:	0.3478
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.0010	Epoch:	18
+Training Accuracy:	0.8968	Testing Accuracy:	0.9435	Cost:	0.3404
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.0010	Epoch:	19
+Training Accuracy:	0.8985	Testing Accuracy:	0.9458	Cost:	0.3314
+------------------------------------------------------------------------------
+Traing with Filter depth 16 and learning rate 0.0010 done after 31.2753 min
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.0001	Epoch:	0
+Training Accuracy:	0.1064	Testing Accuracy:	0.1127	Cost:	2.4314
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.0001	Epoch:	1
+Training Accuracy:	0.1087	Testing Accuracy:	0.1745	Cost:	2.3680
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.0001	Epoch:	2
+Training Accuracy:	0.1144	Testing Accuracy:	0.2105	Cost:	2.3352
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.0001	Epoch:	3
+Training Accuracy:	0.1237	Testing Accuracy:	0.2364	Cost:	2.3139
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.0001	Epoch:	4
+Training Accuracy:	0.1319	Testing Accuracy:	0.2609	Cost:	2.3032
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.0001	Epoch:	5
+Training Accuracy:	0.1397	Testing Accuracy:	0.2850	Cost:	2.2901
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.0001	Epoch:	6
+Training Accuracy:	0.1474	Testing Accuracy:	0.2966	Cost:	2.2771
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.0001	Epoch:	7
+Training Accuracy:	0.1579	Testing Accuracy:	0.3116	Cost:	2.2660
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.0001	Epoch:	8
+Training Accuracy:	0.1651	Testing Accuracy:	0.3220	Cost:	2.2554
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.0001	Epoch:	9
+Training Accuracy:	0.1795	Testing Accuracy:	0.3368	Cost:	2.2423
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.0001	Epoch:	10
+Training Accuracy:	0.1886	Testing Accuracy:	0.3522	Cost:	2.2327
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.0001	Epoch:	11
+Training Accuracy:	0.1990	Testing Accuracy:	0.3688	Cost:	2.2177
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.0001	Epoch:	12
+Training Accuracy:	0.2138	Testing Accuracy:	0.3878	Cost:	2.2045
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.0001	Epoch:	13
+Training Accuracy:	0.2250	Testing Accuracy:	0.4050	Cost:	2.1886
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.0001	Epoch:	14
+Training Accuracy:	0.2380	Testing Accuracy:	0.4214	Cost:	2.1708
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.0001	Epoch:	15
+Training Accuracy:	0.2542	Testing Accuracy:	0.4420	Cost:	2.1530
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.0001	Epoch:	16
+Training Accuracy:	0.2713	Testing Accuracy:	0.4592	Cost:	2.1304
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.0001	Epoch:	17
+Training Accuracy:	0.2869	Testing Accuracy:	0.4757	Cost:	2.1073
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.0001	Epoch:	18
+Training Accuracy:	0.3028	Testing Accuracy:	0.4929	Cost:	2.0790
+------------------------------------------------------------------------------
+Filter depth:		16	Learning Rate:		0.0001	Epoch:	19
+Training Accuracy:	0.3200	Testing Accuracy:	0.5114	Cost:	2.0504
+------------------------------------------------------------------------------
+Traing with Filter depth 16 and learning rate 0.0001 done after 38.9272 min
+

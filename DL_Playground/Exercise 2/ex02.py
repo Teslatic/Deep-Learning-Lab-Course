@@ -16,6 +16,8 @@ import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 from tensorflow.examples.tutorials.mnist import input_data
 
+
+
 ### CONTROL FLAGS
 
 FLAGS = None
@@ -71,7 +73,7 @@ def plot_training_curve(data):
 	plt.figure()
 	for i,val in enumerate(data):
 		plt.plot(data[i],label="learning rate: {}".format(LEARNING_RATE[i]))
-	plt.title("Average Training Accuracy per Epoch")
+	plt.title("Average Training Accuracy per Epoch, Filter depth: {:d}".format(filter_depth))
 	plt.xlabel("Epoch")
 	plt.ylabel("Accuracy")
 	plt.legend()
@@ -81,7 +83,7 @@ def plot_testing_curve(data):
 	plt.figure()
 	for i,val in enumerate(data):
 		plt.plot(data[i],label="learning rate: {}".format(LEARNING_RATE[i]))
-	plt.title("Testing Accuracy per Epoch")
+	plt.title("Testing Accuracy per Epoch, Filter depth: {:d}".format(filter_depth))
 	plt.xlabel("Epoch")
 	plt.ylabel("Accuracy")
 	plt.legend()
@@ -90,28 +92,48 @@ def plot_cost_curve(data):
 	plt.figure()
 	for i,val in enumerate(list_cost):
 		plt.plot(data[i],label="learning rate: {}".format(LEARNING_RATE[i]))
-	plt.title("Average Cost per Epoch")
+	plt.title("Average Cost per Epoch, Filter depth: {:d}".format(filter_depth))
 	plt.xlabel("Epoch")
 	plt.ylabel("Cost")
 	plt.legend()
+	
+def plott_scatter_runtime(runtime):
+	plt.figure()
+	plt.scatter(np.arange(len(runtime)),runtime)
+	plt.title("Runtime vs. Number of Parameters with learning rate {:.4f}".format(LEARNING_RATE[0]))	
+	plt.ylabel("Runtime in minutes")
+	plt.xlabel("Number of parameters")
 
 
 ### MAIN ####
+# to check GPU/CPU runtime performance, use the according virtual environment and change 
+# flags CHECK_CPU before running!
+# set to 1 to train with various filter depths and check according runtime performance
+CHECK_FILTER_DEPTHS = 0
+# set to 1 to run with GPU support instead of CPU, also filter depths are modified (see below)
 CHECK_CPU = 0
-EPOCHS = 1
-BATCH_SIZE = 55000
+# adjust amount of epochs, default = 20
+EPOCHS = 20
+# adjust batch size, default = 50
+BATCH_SIZE = 50
 N_MINIBATCH_UPDATES = int(55000/BATCH_SIZE)
-LEARNING_RATE = [0.1,0.01,0.001,0.0001]
+# default filter depth
+FILTER_SIZE = [16]
+# list of learning rates, I added 0.7 to emphasize overshooting/divergence during optimising
+LEARNING_RATE = [0.7, 0.1,0.01,0.001,0.0001]
 
 # filter sizes for experimentation 
 # GPU {8, 16, 32, 64, 128, 256}
 # CPU {8, 16, 32, 64}
-if CHECK_CPU:
-	FILTER_SIZE = [8, 16, 32, 64]
-
-
-if CHECK_CPU==0:
-	FILTER_SIZE = [8, 16, 32, 64, 128, 256]
+if CHECK_FILTER_DEPTHS:
+	if CHECK_CPU:
+		FILTER_SIZE = [8, 16, 32, 64]
+		# choose fixed learning rate for checking filter depth performance
+		LEARNING_RATE = [0.1]
+	if CHECK_CPU==0:
+		FILTER_SIZE = [8, 16, 32, 64, 128, 256]
+		# choose fixed learning rate for checking filter depth performance
+		LEARNING_RATE = [0.1]
 
 INPUT_DEPTH = 1
 FILTER_WIDTH = 3
@@ -120,15 +142,16 @@ PARAMETER_NUM = (FILTER_WIDTH*FILTER_WIDTH*INPUT_DEPTH+1)*FILTER_SIZE
 # setup data 55000 training samples, 10000 test samples
 print("loading data...")
 mnist = input_data.read_data_sets("MNIST_data/", one_hot = True)
-print("loading finished!")
+print("...loading finished!")
+list_runtime = []
+
+
+
 
 for index,filter_depth in enumerate(FILTER_SIZE):
 	list_cost = [[] for i in range(len(LEARNING_RATE))]
 	list_train_acc = [[] for i in range(len(LEARNING_RATE))]
-	list_test_acc = [[] for i in range(len(LEARNING_RATE))]
-
-
-	
+	list_test_acc = [[] for i in range(len(LEARNING_RATE))]	
 
 	x  = tf.placeholder(tf.float32,([None,784]),name="x")
 	y_ = tf.placeholder(tf.float32,([None,10]),name="labels")
@@ -159,68 +182,65 @@ for index,filter_depth in enumerate(FILTER_SIZE):
 	correct_prediction = tf.equal(tf.argmax(y_conv,1),tf.argmax(y_,1))
 	accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
-	print("starting training now...")
-	print("Now using {} filters:".format(filter_depth))
+	print("starting training now with filter depth of {:d} ...".format(filter_depth))
 	start_time = time.time()
 	for idx,val in enumerate(LEARNING_RATE):
 		# adjust learning rate
 		train_step = tf.train.GradientDescentOptimizer(LEARNING_RATE[idx]).minimize(cross_entropy)
 		# open new session for every learning rate
-		with tf.Session() as sess:
-			print("---------------------------------------------------------------")
+		with tf.Session(config=tf.ConfigProto(log_device_placement=False)) as sess:
+			#tf.Session(config=tf.ConfigProto(log_device_placement=True))
+			print("------------------------------------------------------------------------------")
 			
 			# initialize global variables
 			sess.run(tf.global_variables_initializer())
-			# learning rate loop
 			
 			# epoch loop
 			for ep in range(EPOCHS):
 				train_acc = 0;
 				loss = 0;
-				print("Epoch: {}\t Learning Rate: {}".format(ep,val))
+				#print("Epoch: {}\t Learning Rate: {}".format(ep,val))
 				# batch loop, 55000 samples, batchsize is 50 -> 1100 training loops per epoch
 				for i in range(N_MINIBATCH_UPDATES):
-					batch_x, batch_y = mnist.train.next_batch(BATCH_SIZE)           
+					batch_x, batch_y = mnist.train.next_batch(BATCH_SIZE)  
+					#writer = tf.summary.FileWriter("output", sess.graph)
 					train_step.run(feed_dict={x: batch_x, y_: batch_y, keep_prob: 0.5})
+					#writer.close()
 					# accumulated training accuracy
 					train_acc += sess.run(accuracy,feed_dict={x:batch_x, y_:batch_y, keep_prob:0.5})
 					# accumulated cross entropy loss
 					loss +=sess.run(cross_entropy, feed_dict={x:batch_x,y_: batch_y, keep_prob:0.5})
 							
-				print("Average Training Accurancy in current epoch: \t\t{:.4f}".format(
-					train_acc / N_MINIBATCH_UPDATES))
+				#print("Average Training Accurancy in current epoch: \t\t{:.4f}".format(train_acc / N_MINIBATCH_UPDATES))
 				list_train_acc[idx].append(train_acc/N_MINIBATCH_UPDATES)
 				
 					
-				print("Average Cost in current epoch: \t\t\t\t{:.4f}".format(loss/N_MINIBATCH_UPDATES))
+				#print("Average Cost in current epoch: \t\t\t\t{:.4f}".format(loss/N_MINIBATCH_UPDATES))
 				list_cost[idx].append(loss/N_MINIBATCH_UPDATES)
 
 
 				#test_acc = accuracy.eval(feed_dict={x:mnist.test.images,y_:mnist.test.labels,keep_prob: 1}))
 				test_acc = sess.run(accuracy, feed_dict={x:mnist.test.images,
 												y_:mnist.test.labels,keep_prob: 1})
-				print("Test Accuracy in current epoch: \t\t\t{:.4f}".format(test_acc))
+				#print("Test Accuracy in current epoch: \t\t\t{:.4f}".format(test_acc))
 				list_test_acc[idx].append(test_acc)
-				print("---------------------------------------------------------------")
+				print("Filter depth:\t\t{:d}\tLearning Rate:\t\t{:.4f}\tEpoch:\t{:d}\nTraining Accuracy:\t{:.4f}\tTesting Accuracy:\t{:.4f}\tCost:\t{:.4f}".format(filter_depth,val,ep,train_acc/N_MINIBATCH_UPDATES,test_acc,loss/N_MINIBATCH_UPDATES))
+				
+				
+				print("------------------------------------------------------------------------------")
 		end_time = time.time()
-		time_needed = end_time - start_time
-	print("Done after {:.4f} min".format(time_needed/60))
+		time_needed = (end_time - start_time)/60
+		list_runtime.append(time_needed)
+		print("Traing with Filter depth {:d} and learning rate {:.4f} done after {:.4f} min".format(filter_depth,val,time_needed))
 
-	# plotting stuff
-
-
-
-
-
-	plot_training_curve(list_train_acc)
-
-	plot_testing_curve(list_test_acc)
-
-	plot_cost_curve(list_cost)
-
-
-
-	#plt.show()
+	# only plot learning curves for comparison of learning rates
+	if CHECK_FILTER_DEPTHS==0:
+		plot_training_curve(list_train_acc)
+		plot_testing_curve(list_test_acc)
+		plot_cost_curve(list_cost)
+if CHECK_FILTER_DEPTHS == 1:
+	plott_scatter_runtime(list_runtime)
+plt.show()
 
 
 
