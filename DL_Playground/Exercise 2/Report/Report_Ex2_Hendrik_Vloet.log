@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2017.8.30)  18 NOV 2017 21:06
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2017.8.30)  19 NOV 2017 18:28
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -381,6 +381,9 @@ Package: amsthm 2015/03/04 v2.20.2
 \thm@headsep=\skip53
 \dth@everypar=\toks25
 )
+(/usr/share/texlive/texmf-dist/tex/latex/psnfss/helvet.sty
+Package: helvet 2005/04/12 PSNFSS-v9.2a (WaS) 
+)
 (/usr/share/texlive/texmf-dist/tex/latex/lipsum/lipsum.sty
 Package: lipsum 2014/07/27 v1.3 150 paragraphs of Lorem Ipsum dummy text
 \c@lips@count=\count101
@@ -423,7 +426,7 @@ Class scrartcl Warning: Usage of package `fancyhdr' together
 (scrartcl)              I'd suggest to use 
 (scrartcl)              package `scrlayer-scrpage'.
 (scrartcl)              Nevertheless, using requested
-(scrartcl)              package `fancyhdr' on input line 35.
+(scrartcl)              package `fancyhdr' on input line 38.
 
 (/usr/share/texlive/texmf-dist/tex/latex/fancyhdr/fancyhdr.sty
 \fancy@headwidth=\skip54
@@ -443,52 +446,52 @@ LaTeX Warning: Label `fig:setup' multiply defined.
 )
 \openout1 = `Report_Ex2_Hendrik_Vloet.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 68.
-LaTeX Font Info:    ... okay on input line 68.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 68.
-LaTeX Font Info:    ... okay on input line 68.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 68.
-LaTeX Font Info:    ... okay on input line 68.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 68.
-LaTeX Font Info:    ... okay on input line 68.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 68.
-LaTeX Font Info:    ... okay on input line 68.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 68.
-LaTeX Font Info:    ... okay on input line 68.
-LaTeX Font Info:    Checking defaults for FML/futm/m/it on input line 68.
-LaTeX Font Info:    Try loading font information for FML+futm on input line 68.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 71.
+LaTeX Font Info:    ... okay on input line 71.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 71.
+LaTeX Font Info:    ... okay on input line 71.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 71.
+LaTeX Font Info:    ... okay on input line 71.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 71.
+LaTeX Font Info:    ... okay on input line 71.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 71.
+LaTeX Font Info:    ... okay on input line 71.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 71.
+LaTeX Font Info:    ... okay on input line 71.
+LaTeX Font Info:    Checking defaults for FML/futm/m/it on input line 71.
+LaTeX Font Info:    Try loading font information for FML+futm on input line 71.
 
  (/usr/share/texlive/texmf-dist/tex/latex/fourier/fmlfutm.fd
 File: fmlfutm.fd 2004/10/30 Fontinst v1.926 font definitions for FML/futm.
 )
-LaTeX Font Info:    ... okay on input line 68.
-LaTeX Font Info:    Checking defaults for FMS/futm/m/n on input line 68.
-LaTeX Font Info:    Try loading font information for FMS+futm on input line 68.
+LaTeX Font Info:    ... okay on input line 71.
+LaTeX Font Info:    Checking defaults for FMS/futm/m/n on input line 71.
+LaTeX Font Info:    Try loading font information for FMS+futm on input line 71.
 
 
 (/usr/share/texlive/texmf-dist/tex/latex/fourier/fmsfutm.fd
 File: fmsfutm.fd 2004/10/30 Fontinst v1.926 font definitions for FMS/futm.
 )
-LaTeX Font Info:    ... okay on input line 68.
-LaTeX Font Info:    Checking defaults for FMX/futm/m/n on input line 68.
-LaTeX Font Info:    Try loading font information for FMX+futm on input line 68.
+LaTeX Font Info:    ... okay on input line 71.
+LaTeX Font Info:    Checking defaults for FMX/futm/m/n on input line 71.
+LaTeX Font Info:    Try loading font information for FMX+futm on input line 71.
 
 
 (/usr/share/texlive/texmf-dist/tex/latex/fourier/fmxfutm.fd
 File: fmxfutm.fd futm-extension
 )
-LaTeX Font Info:    ... okay on input line 68.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 68.
-LaTeX Font Info:    Try loading font information for TS1+cmr on input line 68.
+LaTeX Font Info:    ... okay on input line 71.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 71.
+LaTeX Font Info:    Try loading font information for TS1+cmr on input line 71.
 
 (/usr/share/texlive/texmf-dist/tex/latex/base/ts1cmr.fd
 File: ts1cmr.fd 2014/09/29 v2.5h Standard LaTeX font definitions
 )
-LaTeX Font Info:    ... okay on input line 68.
-LaTeX Font Info:    Try loading font information for T1+futs on input line 68.
+LaTeX Font Info:    ... okay on input line 71.
+LaTeX Font Info:    Try loading font information for T1+phv on input line 71.
 
-(/usr/share/texlive/texmf-dist/tex/latex/fourier/t1futs.fd
-File: t1futs.fd 2004/03/02 Fontinst v1.926 font definitions for T1/futs.
+(/usr/share/texlive/texmf-dist/tex/latex/psnfss/t1phv.fd
+File: t1phv.fd 2001/06/04 scalable font definitions for T1/phv.
 )
 (/usr/share/texlive/texmf-dist/tex/context/base/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
@@ -551,170 +554,192 @@ G,.JBIG2,.JB2,.eps]
 File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
 e
 ))
-LaTeX Font Info:    Try loading font information for T1+cmss on input line 71.
+LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <10.95> not available
+(Font)              Font shape `T1/phv/b/n' tried instead on input line 74.
+LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <20.74> not available
+(Font)              Font shape `T1/phv/b/n' tried instead on input line 74.
+LaTeX Font Info:    Try loading font information for T1+futs on input line 74.
 
-(/usr/share/texlive/texmf-dist/tex/latex/base/t1cmss.fd
-File: t1cmss.fd 2014/09/29 v2.5h Standard LaTeX font definitions
+(/usr/share/texlive/texmf-dist/tex/latex/fourier/t1futs.fd
+File: t1futs.fd 2004/03/02 Fontinst v1.926 font definitions for T1/futs.
 )
-LaTeX Font Info:    Try loading font information for FML+futmi on input line 71
+LaTeX Font Info:    Try loading font information for FML+futmi on input line 74
 .
 
 (/usr/share/texlive/texmf-dist/tex/latex/fourier/fmlfutmi.fd
 File: fmlfutmi.fd 2004/10/30 Fontinst v1.926 font definitions for FML/futmi.
 )
 LaTeX Font Info:    Font shape `FMX/futm/m/n' will be
-(Font)              scaled to size 13.24796pt on input line 71.
+(Font)              scaled to size 13.24796pt on input line 74.
 LaTeX Font Info:    Font shape `FMX/futm/m/n' will be
-(Font)              scaled to size 9.19998pt on input line 71.
+(Font)              scaled to size 9.19998pt on input line 74.
 LaTeX Font Info:    Font shape `FMX/futm/m/n' will be
-(Font)              scaled to size 7.35999pt on input line 71.
+(Font)              scaled to size 7.35999pt on input line 74.
 LaTeX Font Info:    Font shape `U/futm/m/n' will be
-(Font)              scaled to size 13.24796pt on input line 71.
+(Font)              scaled to size 13.24796pt on input line 74.
 LaTeX Font Info:    Font shape `U/futm/m/n' will be
-(Font)              scaled to size 9.19998pt on input line 71.
+(Font)              scaled to size 9.19998pt on input line 74.
 LaTeX Font Info:    Font shape `U/futm/m/n' will be
-(Font)              scaled to size 7.35999pt on input line 71.
-LaTeX Font Info:    Try loading font information for U+msa on input line 71.
+(Font)              scaled to size 7.35999pt on input line 74.
+LaTeX Font Info:    Try loading font information for U+msa on input line 74.
 
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 71.
+LaTeX Font Info:    Try loading font information for U+msb on input line 74.
 
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
+LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <14.4> not available
+(Font)              Font shape `T1/phv/b/n' tried instead on input line 79.
+LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <12> not available
+(Font)              Font shape `T1/phv/b/n' tried instead on input line 80.
+
 <example_cnn.png, id=1, 1132.23pt x 394.47375pt>
 File: example_cnn.png Graphic file (type png)
  <use example_cnn.png>
-Package pdftex.def Info: example_cnn.png used on input line 82.
+Package pdftex.def Info: example_cnn.png used on input line 85.
 (pdftex.def)             Requested size: 418.25555pt x 145.71825pt.
- [1
+
+Overfull \hbox (1.63977pt too wide) in paragraph at lines 82--89
+\T1/phv/m/n/10.95 This sec-tion is meant to pro-vide a quick re-cap of Con-vo-l
+u-tional Neu-ral Net-works (CNNs),
+ []
+
+[1
 
 
 {/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map} <./example_cnn.png (PNG cop
 y)>]
-Overfull \hbox (14.76132pt too wide) in paragraph at lines 93--94
-[]\T1/futs/m/n/10.95 depending on the con-vo-lu-tion op-er-a-tion (same/valid),
- the im-age di-men-sions are changed,
- []
+LaTeX Font Info:    Try loading font information for TS1+phv on input line 107.
 
-LaTeX Font Info:    Try loading font information for TS1+futs on input line 103
-.
-(/usr/share/texlive/texmf-dist/tex/latex/fourier/ts1futs.fd
-File: ts1futs.fd 2004/03/26 Fontinst v1.926 font definitions for TS1/futs.
+ (/usr/share/texlive/texmf-dist/tex/latex/psnfss/ts1phv.fd
+File: ts1phv.fd 2001/06/04 scalable font definitions for TS1/phv.
 )
-LaTeX Font Info:    Font shape `T1/futs/bx/n' in size <10.95> not available
-(Font)              Font shape `T1/futs/b/n' tried instead on input line 112.
 LaTeX Font Info:    Font shape `FMX/futm/m/n' will be
-(Font)              scaled to size 10.07397pt on input line 112.
+(Font)              scaled to size 10.07397pt on input line 116.
 LaTeX Font Info:    Font shape `FMX/futm/m/n' will be
-(Font)              scaled to size 7.63599pt on input line 112.
+(Font)              scaled to size 7.63599pt on input line 116.
 LaTeX Font Info:    Font shape `FMX/futm/m/n' will be
-(Font)              scaled to size 5.51999pt on input line 112.
+(Font)              scaled to size 5.51999pt on input line 116.
 LaTeX Font Info:    Font shape `U/futm/m/n' will be
-(Font)              scaled to size 10.07397pt on input line 112.
+(Font)              scaled to size 10.07397pt on input line 116.
 LaTeX Font Info:    Font shape `U/futm/m/n' will be
-(Font)              scaled to size 7.63599pt on input line 112.
+(Font)              scaled to size 7.63599pt on input line 116.
 LaTeX Font Info:    Font shape `U/futm/m/n' will be
-(Font)              scaled to size 5.51999pt on input line 112.
+(Font)              scaled to size 5.51999pt on input line 116.
 
-<setup.png, id=10, 1269.74374pt x 364.36125pt>
+<setup.png, id=9, 1269.74374pt x 364.36125pt>
 File: setup.png Graphic file (type png)
  <use setup.png>
-Package pdftex.def Info: setup.png used on input line 125.
+Package pdftex.def Info: setup.png used on input line 129.
 (pdftex.def)             Requested size: 418.25555pt x 120.02275pt.
 
-<cnn_structure_tb.png, id=12, 1776.6375pt x 1885.0425pt>
+<cnn_structure_tb.png, id=11, 1776.6375pt x 1885.0425pt>
 File: cnn_structure_tb.png Graphic file (type png)
 
 <use cnn_structure_tb.png>
-Package pdftex.def Info: cnn_structure_tb.png used on input line 130.
+Package pdftex.def Info: cnn_structure_tb.png used on input line 134.
 (pdftex.def)             Requested size: 418.24182pt x 261.7469pt.
 
-Underfull \hbox (badness 10000) in paragraph at lines 130--132
+Underfull \hbox (badness 10000) in paragraph at lines 134--136
 [][]
  []
 
 [2
 
 ] [3 <./setup.png> <./cnn_structure_tb.png>]
-<training_curve.png, id=26, 462.528pt x 346.896pt>
+<training_curve.png, id=24, 462.528pt x 346.896pt>
 File: training_curve.png Graphic file (type png)
  <use training_curve.png>
-Package pdftex.def Info: training_curve.png used on input line 158.
+Package pdftex.def Info: training_curve.png used on input line 162.
 (pdftex.def)             Requested size: 138.02547pt x 170.71628pt.
 
-<testing_curve.png, id=27, 462.528pt x 346.896pt>
+<testing_curve.png, id=25, 462.528pt x 346.896pt>
 File: testing_curve.png Graphic file (type png)
  <use testing_curve.png>
-Package pdftex.def Info: testing_curve.png used on input line 161.
+Package pdftex.def Info: testing_curve.png used on input line 165.
 (pdftex.def)             Requested size: 138.02547pt x 170.71628pt.
 
-<cost_curve.png, id=28, 462.528pt x 346.896pt>
+<cost_curve.png, id=26, 462.528pt x 346.896pt>
 File: cost_curve.png Graphic file (type png)
  <use cost_curve.png>
-Package pdftex.def Info: cost_curve.png used on input line 164.
+Package pdftex.def Info: cost_curve.png used on input line 168.
 (pdftex.def)             Requested size: 138.02547pt x 170.71628pt.
- [4
+
+Overfull \hbox (0.4625pt too wide) in paragraph at lines 161--170
+[][] [] [] 
+ []
+
+[4
 
  <./training_curve.png> <./testing_curve.png> <./cost_curve.png>]
-Underfull \hbox (badness 10000) in paragraph at lines 169--171
+Underfull \hbox (badness 10000) in paragraph at lines 173--175
 
  []
 
-<runtime_cpu.png, id=35, 462.528pt x 346.896pt>
+
+Underfull \hbox (badness 10000) in paragraph at lines 176--177
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 184--185
+
+ []
+
+<runtime_cpu.png, id=33, 462.528pt x 346.896pt>
 File: runtime_cpu.png Graphic file (type png)
  <use runtime_cpu.png>
-Package pdftex.def Info: runtime_cpu.png used on input line 199.
-(pdftex.def)             Requested size: 231.26343pt x 173.44757pt.
+Package pdftex.def Info: runtime_cpu.png used on input line 216.
+(pdftex.def)             Requested size: 188.21207pt x 170.71628pt.
 
-Overfull \hbox (43.04971pt too wide) in paragraph at lines 199--201
+Underfull \hbox (badness 10000) in paragraph at lines 216--218
 [][]
  []
 
-File: runtime_cpu.png Graphic file (type png)
-<use runtime_cpu.png>
-Package pdftex.def Info: runtime_cpu.png used on input line 204.
-(pdftex.def)             Requested size: 231.26343pt x 173.44757pt.
+<runtime_gpu.png, id=34, 578.16pt x 433.62pt>
+File: runtime_gpu.png Graphic file (type png)
+ <use runtime_gpu.png>
+Package pdftex.def Info: runtime_gpu.png used on input line 221.
+(pdftex.def)             Requested size: 188.20854pt x 170.71892pt.
 
-Overfull \hbox (43.04971pt too wide) in paragraph at lines 204--206
+Underfull \hbox (badness 10000) in paragraph at lines 221--223
 [][]
  []
 
 
-Overfull \hbox (2.49422pt too wide) in paragraph at lines 173--208
+Overfull \hbox (66.77507pt too wide) in paragraph at lines 200--225
 [][]  []
  []
 
 [5
 
- <./runtime_cpu.png>] (./Report_Ex2_Hendrik_Vloet.aux)
+ <./runtime_cpu.png> <./runtime_gpu.png>] (./Report_Ex2_Hendrik_Vloet.aux)
 
 LaTeX Warning: There were multiply-defined labels.
 
  ) 
 Here is how much of TeX's memory you used:
- 5718 strings out of 493029
- 84035 string characters out of 6136234
- 305226 words of memory out of 5000000
- 9111 multiletter control sequences out of 15000+600000
- 80123 words of font info for 96 fonts, out of 8000000 for 9000
+ 5775 strings out of 493029
+ 84581 string characters out of 6136234
+ 307366 words of memory out of 5000000
+ 9171 multiletter control sequences out of 15000+600000
+ 85949 words of font info for 96 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  47i,10n,47p,711b,237s stack positions out of 5000i,500n,10000p,200000b,80000s
-{/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc}{/usr/share/texmf/
-fonts/enc/dvips/cm-super/cm-super-t1.enc}</usr/share/texlive/texmf-dist/fonts/t
-ype1/public/fourier/fourier-mex.pfb></usr/share/texlive/texmf-dist/fonts/type1/
-public/fourier/fourier-ms.pfb></usr/share/texlive/texmf-dist/fonts/type1/adobe/
-utopia/putb8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/adobe/utopia/putr8
-a.pfb></usr/share/texlive/texmf-dist/fonts/type1/adobe/utopia/putri8a.pfb></usr
-/share/texmf/fonts/type1/public/cm-super/sfsx1095.pfb></usr/share/texmf/fonts/t
-ype1/public/cm-super/sfsx1200.pfb></usr/share/texmf/fonts/type1/public/cm-super
-/sfsx1440.pfb>
-Output written on Report_Ex2_Hendrik_Vloet.pdf (5 pages, 553208 bytes).
+{/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/share/texliv
+e/texmf-dist/fonts/type1/public/fourier/fourier-mex.pfb></usr/share/texlive/tex
+mf-dist/fonts/type1/public/fourier/fourier-ms.pfb></usr/share/texlive/texmf-dis
+t/fonts/type1/adobe/utopia/putr8a.pfb></usr/share/texlive/texmf-dist/fonts/type
+1/adobe/utopia/putri8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/helve
+tic/uhvb8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/helvetic/uhvr8a.p
+fb>
+Output written on Report_Ex2_Hendrik_Vloet.pdf (5 pages, 544606 bytes).
 PDF statistics:
- 68 PDF objects out of 1000 (max. 8388607)
- 39 compressed objects within 1 object stream
+ 61 PDF objects out of 1000 (max. 8388607)
+ 32 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
- 36 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 41 words of extra memory for PDF output out of 10000 (max. 10000000)
 

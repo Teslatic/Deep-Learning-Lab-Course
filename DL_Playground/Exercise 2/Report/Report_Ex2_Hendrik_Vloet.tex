@@ -25,6 +25,9 @@
 \usepackage[english]{babel} % English language/hyphenation
 \usepackage{amsmath,amsfonts,amsthm} % Math packages
 
+\usepackage{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+
 \usepackage{lipsum} % Used for inserting dummy 'Lorem ipsum' text into the template
 \usepackage{graphicx}
 
@@ -100,6 +103,7 @@ The basic workflow works like this:
 \subsubsection{Hyperparameters}
 There are several hyperparameters for CNNs one can tweak, here is a short overview over the most common (there are many more):
 \begin{itemize}
+	\setlength\itemsep{0em}
 	\item Number of Layers
 	\item Choice of Pooling
 	\item Choice of Loss Function
@@ -167,22 +171,35 @@ Overall one can say a CNN can be easy to implement and lead to very good result,
 \subsection{Task 3: Runtime Comparison}
 
 The runtime comparison shows that the runtime increases exponentially for the increasing number of filters, since the parameters also increases.
-Overall are the GPU runtimes faster than the CPU runtimes.\\
+Overall the GPU runtimes are much lower than the CPU runtimes. This is because the GPU memory can be used more efficiently than the CPU\\
+
+The filter sizes of 128 and 256 I could not inspect, since the workstation I used terminated due to out-of-memory errors. I attached the error message. The number of parameters missing I calculated by hand, but I could not verify them due to the OOM error(Please take a look at the according file MEMORY\_ERROR.txt in the same directory as the report).\\
+\begin{flalign*}
+& \textbf{Parameters for 128 filters: }\\
+& \left[ (3 \cdot 3 \cdot 1 + 1) \cdot 128 \right]  + \left[ (3 \cdot 3\cdot 128 +1)\cdot 128 \right] + \left[ 7 \cdot 7 \cdot 128 \cdot 128 + 128\right] + \left[ 128 \cdot 10 + 10 \right] = 953098 \\
+& \textbf{Parameters for 256 filters: }\\
+& \left[ (3 \cdot 3 \cdot 1 + 1) \cdot 256 \right]  + \left[ (3 \cdot 3\cdot 256 +1)\cdot 256 \right] + \left[ 7 \cdot 7 \cdot 256 \cdot 128 + 128\right] + \left[ 128 \cdot 10 + 10 \right] = 2198410 \\
+\end{flalign*}
+
+Nevertheless, I can still conclude what was stated above: the usage of GPU is way more efficient than the use of the CPU.\\
 
 
+
+\scalebox{0.7}{
 \begin{tabular}{|c|c|c|c|c|}
-\hline 
+\hline
 \textbf{CPU} &  &  & &    \\ 
 \hline 
 \hline
 Filter depth & 8 & 16 & 32 & 64   \\ 
 \hline 
-Parameters & • & • & • & •   \\ 
+Parameters & 52258 & 104250 & 211690 & 440394   \\ 
 \hline 
-Runtime & 6.3 & 7.8 & 12.7 & 31.   \\ 
+Runtime & 5.8 & 7.4 & 12.5 & 35.3 \\ 
 \hline
-\end{tabular} 
+\end{tabular} }
 \hfill
+\scalebox{0.7}{
 \begin{tabular}{|c|c|c|c|c|c|c|}
 \hline
 \textbf{GPU} &  &  &  &  &  &  \\ 
@@ -190,19 +207,19 @@ Runtime & 6.3 & 7.8 & 12.7 & 31.   \\
 \hline
 Filter depth & 8 & 16 & 32 & 64 & 128 & 256 \\ 
 \hline 
-Parameters & • & • & • & • & • & • \\ 
+Parameters Parameters & 52258 & 104250 & 211690 & 440394  & 953098 & 2198410 \\ 
 \hline 
-Runtime & • & • & • & • & • & • \\ 
+Runtime & 1.3411 & 1.5256 & 1.9356 & 3.0511 & OOM & OOM \\ 
 \hline 
-\end{tabular} 
+\end{tabular} }
 \begin{minipage}[t]{0.45\textwidth}
-	\includegraphics[scale=.5]{runtime_cpu}
-	CPU Runtime vs. number of parameters
+	\includegraphics[width=\textwidth,height=6cm]{runtime_cpu}
+	CPU Runtime vs.  no. of parameters
 \end{minipage}
 \hfill
 \begin{minipage}[t]{0.45\textwidth}
-	\includegraphics[scale=.5]{runtime_cpu}
-	GPU Runtime vs. number of parameters
+	\includegraphics[width=\textwidth,height=6cm]{runtime_gpu}
+	GPU Runtime vs. no. of parameters
 
 \end{minipage}
 

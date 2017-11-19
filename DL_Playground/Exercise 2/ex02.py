@@ -105,9 +105,9 @@ FLAGS = None
 # to check GPU/CPU runtime performance, use the according virtual environment and change 
 # flags CHECK_CPU before running!
 # set to 1 to train with various filter depths and check according runtime performance
-CHECK_FILTER_DEPTHS = 0
-# set to 1 to run with GPU settings: filter depths are modified (see below)
-CHECK_CPU = 1
+CHECK_FILTER_DEPTHS = 1
+# set to 1 to run with CPU settings: filter depths are modified (see below)
+CHECK_CPU = 0
 # adjust amount of epochs, default = 20
 EPOCHS = 20
 # adjust batch size, default = 50
@@ -126,7 +126,8 @@ if CHECK_FILTER_DEPTHS:
 		# choose fixed learning rate for checking filter depth performance
 		LEARNING_RATE = [0.1]
 	if CHECK_CPU==0:
-		FILTER_SIZE = [8, 16, 32, 64, 128, 256]
+		FILTER_SIZE = [8, 16, 32, 64]# ,128, 256]
+
 		# choose fixed learning rate for checking filter depth performance
 		LEARNING_RATE = [0.1]
 
@@ -185,7 +186,11 @@ for index,filter_depth in enumerate(FILTER_SIZE):
 		# adjust learning rate
 		train_step = tf.train.GradientDescentOptimizer(LEARNING_RATE[idx]).minimize(cross_entropy)
 		# open new session for every learning rate
-		with tf.Session(config=tf.ConfigProto(log_device_placement=False)) as sess:
+		
+		
+		config = tf.ConfigProto()
+		config.gpu_options.allow_growth = True
+		with tf.Session(config = config) as sess:
 			
 			print("------------------------------------------------------------------------------")
 			
@@ -217,7 +222,7 @@ for index,filter_depth in enumerate(FILTER_SIZE):
 
 				list_test_acc[idx].append(test_acc)
 				print("Filter depth:\t\t{:d}\tLearning Rate:\t\t{:.4f}\tEpoch:\t{:d}\nTraining Accuracy:\t{:.4f}\tTesting Accuracy:\t{:.4f}\tCost:\t{:.4f}".format(filter_depth,val,ep,train_acc/N_MINIBATCH_UPDATES,test_acc,loss/N_MINIBATCH_UPDATES))
-				
+
 			
 			print("------------------------------------------------------------------------------")
 		
