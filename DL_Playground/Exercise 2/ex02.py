@@ -16,14 +16,6 @@ import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 from tensorflow.examples.tutorials.mnist import input_data
 
-
-
-### CONTROL FLAGS
-
-FLAGS = None
-ADAM = False
-
-
 ### METHODS AND FUNCTIONS ###
 
 def conv_layer(input,shape, name="conv"):
@@ -33,7 +25,6 @@ def conv_layer(input,shape, name="conv"):
 		conv = tf.nn.conv2d(input,w, strides=[1,1,1,1], padding="SAME")
 		act = tf.nn.relu(conv + b)
 		return act
-
 
 # 2x2 max pooling
 def max_pool_2x2(input,name="max_pooling_2x2"):
@@ -48,7 +39,7 @@ def fc_layer(input, shape, name = "fc"):
 		b = tf.Variable(tf.constant(0.1,shape=[shape[-1]]),name ="B")
 		act = tf.nn.relu(tf.matmul(input,w)+b)
 		return act
-
+# softmax output
 def softmax_output(input,shape,name="softmax"):
 	with tf.name_scope(name):
 		w = tf.Variable(tf.truncated_normal(shape, stddev=0.1),name="W")
@@ -56,19 +47,21 @@ def softmax_output(input,shape,name="softmax"):
 		y_conv = tf.matmul(input,w)+b
 		return y_conv
 	
+# crossentropy loss function
 def xent(input,name="xent"):
 	with tf.name_scope(name):
 		xent = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=y_,
 																		logits=input))
 	tf.summary.scalar("Cross_entropy",xent)
 	return xent
-
+# dropout regularization
 def drop_out(input,name="dropout"):
 	with tf.name_scope(name):
 		keep_prob = tf.placeholder(tf.float32)
 		h_drop_out = tf.nn.dropout(input, keep_prob)
+		
 		return keep_prob, h_drop_out
-
+# plotting stuff
 def plot_training_curve(data):
 	plt.figure()
 	for i,val in enumerate(data):
@@ -97,21 +90,24 @@ def plot_cost_curve(data):
 	plt.ylabel("Cost")
 	plt.legend()
 	
-def plott_scatter_runtime(runtime):
+def plott_scatter_runtime(runtime,y):
 	plt.figure()
-	plt.scatter(np.arange(len(runtime)),runtime)
+	plt.scatter(y,runtime)
 	plt.title("Runtime vs. Number of Parameters with learning rate {:.4f}".format(LEARNING_RATE[0]))	
 	plt.ylabel("Runtime in minutes")
 	plt.xlabel("Number of parameters")
 
 
 ### MAIN ####
+
+### CONTROL FLAGS
+FLAGS = None
 # to check GPU/CPU runtime performance, use the according virtual environment and change 
 # flags CHECK_CPU before running!
 # set to 1 to train with various filter depths and check according runtime performance
 CHECK_FILTER_DEPTHS = 0
-# set to 1 to run with GPU support instead of CPU, also filter depths are modified (see below)
-CHECK_CPU = 0
+# set to 1 to run with GPU settings: filter depths are modified (see below)
+CHECK_CPU = 1
 # adjust amount of epochs, default = 20
 EPOCHS = 20
 # adjust batch size, default = 50
@@ -121,7 +117,6 @@ N_MINIBATCH_UPDATES = int(55000/BATCH_SIZE)
 FILTER_SIZE = [16]
 # list of learning rates, I added 0.7 to emphasize overshooting/divergence during optimising
 LEARNING_RATE = [0.7, 0.1,0.01,0.001,0.0001]
-
 # filter sizes for experimentation 
 # GPU {8, 16, 32, 64, 128, 256}
 # CPU {8, 16, 32, 64}
@@ -143,8 +138,9 @@ PARAMETER_NUM = (FILTER_WIDTH*FILTER_WIDTH*INPUT_DEPTH+1)*FILTER_SIZE
 print("loading data...")
 mnist = input_data.read_data_sets("MNIST_data/", one_hot = True)
 print("...loading finished!")
+# global lists
 list_runtime = []
-
+list_free_param = []
 
 
 
@@ -168,8 +164,9 @@ for index,filter_depth in enumerate(FILTER_SIZE):
 	h_pool2 = max_pool_2x2(h_conv2)
 
 
-	# Layer 3: fully connected
+	# array flattening
 	h_pool2_flat = tf.reshape(h_pool2, [-1, 7*7*filter_depth])
+	# Layer 3: fully connected
 	h_fc1 = fc_layer(h_pool2_flat, [7*7*filter_depth,128],"fc_1")
 
 	# Dropout Regularization
@@ -189,7 +186,7 @@ for index,filter_depth in enumerate(FILTER_SIZE):
 		train_step = tf.train.GradientDescentOptimizer(LEARNING_RATE[idx]).minimize(cross_entropy)
 		# open new session for every learning rate
 		with tf.Session(config=tf.ConfigProto(log_device_placement=False)) as sess:
-			#tf.Session(config=tf.ConfigProto(log_device_placement=True))
+			
 			print("------------------------------------------------------------------------------")
 			
 			# initialize global variables
@@ -199,7 +196,7 @@ for index,filter_depth in enumerate(FILTER_SIZE):
 			for ep in range(EPOCHS):
 				train_acc = 0;
 				loss = 0;
-				#print("Epoch: {}\t Learning Rate: {}".format(ep,val))
+				print("------------------------------------------------------------------------------")
 				# batch loop, 55000 samples, batchsize is 50 -> 1100 training loops per epoch
 				for i in range(N_MINIBATCH_UPDATES):
 					batch_x, batch_y = mnist.train.next_batch(BATCH_SIZE)  
@@ -211,27 +208,39 @@ for index,filter_depth in enumerate(FILTER_SIZE):
 					# accumulated cross entropy loss
 					loss +=sess.run(cross_entropy, feed_dict={x:batch_x,y_: batch_y, keep_prob:0.5})
 							
-				#print("Average Training Accurancy in current epoch: \t\t{:.4f}".format(train_acc / N_MINIBATCH_UPDATES))
-				list_train_acc[idx].append(train_acc/N_MINIBATCH_UPDATES)
 				
-					
-				#print("Average Cost in current epoch: \t\t\t\t{:.4f}".format(loss/N_MINIBATCH_UPDATES))
+				list_train_acc[idx].append(train_acc/N_MINIBATCH_UPDATES)
 				list_cost[idx].append(loss/N_MINIBATCH_UPDATES)
 
-
-				#test_acc = accuracy.eval(feed_dict={x:mnist.test.images,y_:mnist.test.labels,keep_prob: 1}))
 				test_acc = sess.run(accuracy, feed_dict={x:mnist.test.images,
 												y_:mnist.test.labels,keep_prob: 1})
-				#print("Test Accuracy in current epoch: \t\t\t{:.4f}".format(test_acc))
+
 				list_test_acc[idx].append(test_acc)
 				print("Filter depth:\t\t{:d}\tLearning Rate:\t\t{:.4f}\tEpoch:\t{:d}\nTraining Accuracy:\t{:.4f}\tTesting Accuracy:\t{:.4f}\tCost:\t{:.4f}".format(filter_depth,val,ep,train_acc/N_MINIBATCH_UPDATES,test_acc,loss/N_MINIBATCH_UPDATES))
 				
-				
-				print("------------------------------------------------------------------------------")
+			
+			print("------------------------------------------------------------------------------")
+		
+		if(CHECK_FILTER_DEPTHS == 1):
+			trainable_variables = []
+			trainable_variables = tf.trainable_variables()
+			free_param = []
+			for idx,_ in enumerate(trainable_variables):
+				free_param.append(np.prod(trainable_variables[idx].get_shape().as_list()))
+			free_param = np.sum(free_param)
+			list_free_param.append(free_param)
+			print("Trainable parameters: {}".format(free_param))
+			tf.reset_default_graph()
+			
+		
 		end_time = time.time()
 		time_needed = (end_time - start_time)/60
 		list_runtime.append(time_needed)
-		print("Traing with Filter depth {:d} and learning rate {:.4f} done after {:.4f} min".format(filter_depth,val,time_needed))
+		print("Training with Filter depth {:d} and learning rate {:.4f} done after {:.4f} min".format(filter_depth,val,time_needed))
+		print("------------------------------------------------------------------------------")
+		print("------------------------------------------------------------------------------")
+	
+
 
 	# only plot learning curves for comparison of learning rates
 	if CHECK_FILTER_DEPTHS==0:
@@ -239,12 +248,8 @@ for index,filter_depth in enumerate(FILTER_SIZE):
 		plot_testing_curve(list_test_acc)
 		plot_cost_curve(list_cost)
 if CHECK_FILTER_DEPTHS == 1:
-	plott_scatter_runtime(list_runtime)
+	plott_scatter_runtime(list_runtime,list_free_param)
 plt.show()
-
-
-
-
 
 
 
