@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 ### import stuff for the tutorials
 
 from __future__ import absolute_import
@@ -107,7 +109,7 @@ FLAGS = None
 # set to 1 to train with various filter depths and check according runtime performance
 CHECK_FILTER_DEPTHS = 1
 # set to 1 to run with CPU settings: filter depths are modified (see below)
-CHECK_CPU = 0
+CHECK_CPU = 1
 # adjust amount of epochs, default = 20
 EPOCHS = 20
 # adjust batch size, default = 50
@@ -117,6 +119,12 @@ N_MINIBATCH_UPDATES = int(55000/BATCH_SIZE)
 FILTER_SIZE = [16]
 # list of learning rates, I added 0.7 to emphasize overshooting/divergence during optimising
 LEARNING_RATE = [0.7, 0.1,0.01,0.001,0.0001]
+
+# testing batch size for preventing memory problems with GPU -> WORKS!
+TEST_BATCH_SIZE = 500
+TEST_BATCH_UPDATES = int(10000/BATCH_SIZE)
+
+
 # filter sizes for experimentation 
 # GPU {8, 16, 32, 64, 128, 256}
 # CPU {8, 16, 32, 64}
@@ -126,7 +134,7 @@ if CHECK_FILTER_DEPTHS:
 		# choose fixed learning rate for checking filter depth performance
 		LEARNING_RATE = [0.1]
 	if CHECK_CPU==0:
-		FILTER_SIZE = [8, 16, 32, 64]# ,128, 256]
+		FILTER_SIZE = [8, 16, 32, 64, 128, 256]
 
 		# choose fixed learning rate for checking filter depth performance
 		LEARNING_RATE = [0.1]
@@ -199,12 +207,13 @@ for index,filter_depth in enumerate(FILTER_SIZE):
 			
 			# epoch loop
 			for ep in range(EPOCHS):
+				test_acc = 0;
 				train_acc = 0;
 				loss = 0;
 				print("------------------------------------------------------------------------------")
 				# batch loop, 55000 samples, batchsize is 50 -> 1100 training loops per epoch
 				for i in range(N_MINIBATCH_UPDATES):
-					batch_x, batch_y = mnist.train.next_batch(BATCH_SIZE)  
+					batch_x, batch_y = mnist.train.next_batch(BATCH_SIZE, shuffle=False)  
 					#writer = tf.summary.FileWriter("output", sess.graph)
 					train_step.run(feed_dict={x: batch_x, y_: batch_y, keep_prob: 0.5})
 					#writer.close()
@@ -217,8 +226,13 @@ for index,filter_depth in enumerate(FILTER_SIZE):
 				list_train_acc[idx].append(train_acc/N_MINIBATCH_UPDATES)
 				list_cost[idx].append(loss/N_MINIBATCH_UPDATES)
 
-				test_acc = sess.run(accuracy, feed_dict={x:mnist.test.images,
-												y_:mnist.test.labels,keep_prob: 1})
+			
+				# batching the testing operation in order to prevent OOM issues with GPU support
+				for j in range(TEST_BATCH_UPDATES):
+					test_batch_x, test_batch_y = mnist.test.next_batch(TEST_BATCH_SIZE)
+					test_acc += sess.run(accuracy, feed_dict={x:test_batch_x, y_:test_batch_y,keep_prob: 1})
+				test_acc = test_acc/TEST_BATCH_UPDATES
+				
 
 				list_test_acc[idx].append(test_acc)
 				print("Filter depth:\t\t{:d}\tLearning Rate:\t\t{:.4f}\tEpoch:\t{:d}\nTraining Accuracy:\t{:.4f}\tTesting Accuracy:\t{:.4f}\tCost:\t{:.4f}".format(filter_depth,val,ep,train_acc/N_MINIBATCH_UPDATES,test_acc,loss/N_MINIBATCH_UPDATES))
@@ -262,147 +276,3 @@ plt.show()
 
 
 
-
-
-
-
-
-
-
-
-####################################
-### CODE DUMPSTER - IGNORE BELOW ###
-####################################
-
-
-
-
-
-'''
-			if i%50==0:
-				train_acc, train_summ = sess.run([accuracy, training_summary],
-										feed_dict={x:batch_x, y_:batch_y, keep_prob:0.5})
-				writer.add_summary(train_summ,i)
-				list_train_acc.append(train_acc)
-			
-				xent, cost_summ = sess.run([cross_entropy, xent_summary], feed_dict={x:batch_x,
-																			y_: batch_y, keep_prob:0.5})
-				writer.add_summary(cost_summ,i)
-				list_cost.append(xent)
-			'''
-				
-		
-			#if i%50 == 0:
-			#	print('step {}, training accuracy {:.4f}, cost {:.4f}'.format(i, train_acc, xent))
-				
-			#if epoch % 5 == 0:
-		
-		
-		
-		
-		
-		
-'''
-if ADAM == False:
-	# define optimizing approach: gradient descent
-	train_step = tf.train.GradientDescentOptimizer(0.1).minimize(cross_entropy)
-	correct_prediction = tf.equal(tf.argmax(y_conv,1),tf.argmax(y_,1))
-	accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
-
-	with tf.Session() as sess:
-		sess.run(tf.global_variables_initializer())
-		for i in range(2000):
-			batch_xs, batch_ys = mnist.train.next_batch(50)
-			if i % 100 == 0:
-				train_accuracy = accuracy.eval(feed_dict={x: batch_xs, y_: batch_ys, keep_prob: 1.0})
-				print('step %d, training accuracy %g' % (i, train_accuracy))
-
-			train_step.run(feed_dict={x: batch_xs, y_: batch_ys, keep_prob: 0.5})
-		print('test accuracy %g' % accuracy.eval(feed_dict={x: mnist.test.images, y_: mnist.test.labels, keep_prob: 1.0}))
-
-if ADAM:
-	# use ADAM, not as good as SGD !?
-	train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
-	correct_prediction = tf.equal(tf.argmax(y_conv,1),tf.argmax(y_,1))
-	accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
-
-	with tf.Session() as sess:
-		sess.run(tf.global_variables_initializer())
-		for i in range(2000):
-			batch_xs, batch_ys = mnist.train.next_batch(50)
-			if i % 100 == 0:
-				train_accuracy = accuracy.eval(feed_dict={
-					x: batch_xs, y_: batch_ys, keep_prob: 1.0})
-				print('step %d, training accuracy %g' % (i, train_accuracy))
-				train_step.run(feed_dict={x: batch_xs, y_: batch_ys, keep_prob: 0.5})
-
-		print('test accuracy %g' % accuracy.eval(feed_dict={x: mnist.test.images, y_:
-														  mnist.test.labels, keep_prob: 1.0}))
-
-'''
-
-
-
-
-
-
-
-
-
-'''
-
-
-# weight initialization method, drawn from normal distribution with noise
-# to prevent symmetry
-def weight_variable(shape):
-	initial = tf.truncated_normal(shape, stddev=0.1)
-	return tf.Variable(initial)
-
-# bias initialization, small bias to prevent "dead neurons"
-def bias_variable(shape):
-	initial = tf.constant(0.1, shape=shape)
-	return tf.Variable(initial)
-
- # convolutional layer with stride = 1 and zero padding -> keeps dimensions!
-def conv2d(x,W):
-	return tf.nn.conv2d(x,W,strides=[1,1,1,1],padding="SAME")
-
-# 2x2 max pooling
-def max_pool_2x2(x):
-	return tf.nn.max_pool(x, ksize=[1,2,2,1], strides=[1,2,2,1],padding = "SAME")
-
-### Layer 1 (convolution)
-# flow: input -> convolve with weight -> add bias -> apply ReLu -> max pool
-# max pooling will reduce the image sie to 14x14
-W_conv1 = weight_variable([3, 3, 1, 16])
-b_conv1 = bias_variable([16])
-
-h_conv1 = tf.nn.relu(conv2d(x_image, W_conv1) + b_conv1)
-h_pool1 = max_pool_2x2(h_conv1)
-
-### Layer 2 (convolution)
-W_conv2 = weight_variable([3, 3, 16, 16])
-b_conv2 = bias_variable([16])
-
-h_conv2 = tf.nn.relu(conv2d(h_pool1, W_conv2) + b_conv2)
-h_pool2 = max_pool_2x2(h_conv2)
-
-### Layer 3	(fully connected, ReLu activation 128 neurons)
-W_fc1 = weight_variable([7*7*16,128])
-b_fc1 = bias_variable([128])
-
-
-#h_fc1 = tf.nn.relu(tf.matmul(h_pool2_flat,W_fc1)+b_fc1)
-
-# dropout regularization to prevent overfitting
-#keep_prob = tf.placeholder(tf.float32)
-#h_fc1_drop = tf.nn.dropout(h_fc1, keep_prob)
-
-### Layer 4 (output layer with softmax readout)
-#W_fc2 = weight_variable([128,10])
-#b_fc2 = bias_variable([10])
-	
-#y_conv = tf.matmul(h_fc1_drop,W_fc2)+b_fc2
-#cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=y_, logits=y_conv))
-
-'''

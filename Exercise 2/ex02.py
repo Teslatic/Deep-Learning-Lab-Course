@@ -109,7 +109,7 @@ FLAGS = None
 # set to 1 to train with various filter depths and check according runtime performance
 CHECK_FILTER_DEPTHS = 1
 # set to 1 to run with CPU settings: filter depths are modified (see below)
-CHECK_CPU = 0
+CHECK_CPU = 1
 # adjust amount of epochs, default = 20
 EPOCHS = 20
 # adjust batch size, default = 50
@@ -119,6 +119,12 @@ N_MINIBATCH_UPDATES = int(55000/BATCH_SIZE)
 FILTER_SIZE = [16]
 # list of learning rates, I added 0.7 to emphasize overshooting/divergence during optimising
 LEARNING_RATE = [0.7, 0.1,0.01,0.001,0.0001]
+
+# testing batch size for preventing memory problems with GPU -> WORKS!
+TEST_BATCH_SIZE = 500
+TEST_BATCH_UPDATES = int(10000/BATCH_SIZE)
+
+
 # filter sizes for experimentation 
 # GPU {8, 16, 32, 64, 128, 256}
 # CPU {8, 16, 32, 64}
@@ -201,12 +207,13 @@ for index,filter_depth in enumerate(FILTER_SIZE):
 			
 			# epoch loop
 			for ep in range(EPOCHS):
+				test_acc = 0;
 				train_acc = 0;
 				loss = 0;
 				print("------------------------------------------------------------------------------")
 				# batch loop, 55000 samples, batchsize is 50 -> 1100 training loops per epoch
 				for i in range(N_MINIBATCH_UPDATES):
-					batch_x, batch_y = mnist.train.next_batch(BATCH_SIZE)  
+					batch_x, batch_y = mnist.train.next_batch(BATCH_SIZE, shuffle=False)  
 					#writer = tf.summary.FileWriter("output", sess.graph)
 					train_step.run(feed_dict={x: batch_x, y_: batch_y, keep_prob: 0.5})
 					#writer.close()
@@ -219,8 +226,13 @@ for index,filter_depth in enumerate(FILTER_SIZE):
 				list_train_acc[idx].append(train_acc/N_MINIBATCH_UPDATES)
 				list_cost[idx].append(loss/N_MINIBATCH_UPDATES)
 
-				test_acc = sess.run(accuracy, feed_dict={x:mnist.test.images,
-												y_:mnist.test.labels,keep_prob: 1})
+			
+				# batching the testing operation in order to prevent OOM issues with GPU support
+				for j in range(TEST_BATCH_UPDATES):
+					test_batch_x, test_batch_y = mnist.test.next_batch(TEST_BATCH_SIZE)
+					test_acc += sess.run(accuracy, feed_dict={x:test_batch_x, y_:test_batch_y,keep_prob: 1})
+				test_acc = test_acc/TEST_BATCH_UPDATES
+				
 
 				list_test_acc[idx].append(test_acc)
 				print("Filter depth:\t\t{:d}\tLearning Rate:\t\t{:.4f}\tEpoch:\t{:d}\nTraining Accuracy:\t{:.4f}\tTesting Accuracy:\t{:.4f}\tCost:\t{:.4f}".format(filter_depth,val,ep,train_acc/N_MINIBATCH_UPDATES,test_acc,loss/N_MINIBATCH_UPDATES))

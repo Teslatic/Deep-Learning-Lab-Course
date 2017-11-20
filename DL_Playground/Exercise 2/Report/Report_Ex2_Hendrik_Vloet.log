@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2017.8.30)  19 NOV 2017 18:28
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2017.8.30)  20 NOV 2017 18:27
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -675,58 +675,33 @@ Overfull \hbox (0.4625pt too wide) in paragraph at lines 161--170
 [4
 
  <./training_curve.png> <./testing_curve.png> <./cost_curve.png>]
-Underfull \hbox (badness 10000) in paragraph at lines 173--175
+Underfull \hbox (badness 10000) in paragraph at lines 173--176
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 176--177
+Underfull \hbox (badness 10000) in paragraph at lines 177--178
 
  []
 
+<runtime_comp.png, id=33, 578.16pt x 433.62pt>
+File: runtime_comp.png Graphic file (type png)
+ <use runtime_comp.png>
+Package pdftex.def Info: runtime_comp.png used on input line 231.
+(pdftex.def)             Requested size: 418.251pt x 284.54257pt.
+ [5
 
-Underfull \hbox (badness 10000) in paragraph at lines 184--185
-
- []
-
-<runtime_cpu.png, id=33, 462.528pt x 346.896pt>
-File: runtime_cpu.png Graphic file (type png)
- <use runtime_cpu.png>
-Package pdftex.def Info: runtime_cpu.png used on input line 216.
-(pdftex.def)             Requested size: 188.21207pt x 170.71628pt.
-
-Underfull \hbox (badness 10000) in paragraph at lines 216--218
-[][]
- []
-
-<runtime_gpu.png, id=34, 578.16pt x 433.62pt>
-File: runtime_gpu.png Graphic file (type png)
- <use runtime_gpu.png>
-Package pdftex.def Info: runtime_gpu.png used on input line 221.
-(pdftex.def)             Requested size: 188.20854pt x 170.71892pt.
-
-Underfull \hbox (badness 10000) in paragraph at lines 221--223
-[][]
- []
-
-
-Overfull \hbox (66.77507pt too wide) in paragraph at lines 200--225
-[][]  []
- []
-
-[5
-
- <./runtime_cpu.png> <./runtime_gpu.png>] (./Report_Ex2_Hendrik_Vloet.aux)
+ <./runtime_comp.png>] (./Report_Ex2_Hendrik_Vloet.aux)
 
 LaTeX Warning: There were multiply-defined labels.
 
  ) 
 Here is how much of TeX's memory you used:
- 5775 strings out of 493029
- 84581 string characters out of 6136234
- 307366 words of memory out of 5000000
- 9171 multiletter control sequences out of 15000+600000
- 85949 words of font info for 96 fonts, out of 8000000 for 9000
+ 5764 strings out of 493029
+ 84412 string characters out of 6136234
+ 305368 words of memory out of 5000000
+ 9161 multiletter control sequences out of 15000+600000
+ 79211 words of font info for 92 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  47i,10n,47p,711b,237s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/share/texliv
@@ -736,10 +711,10 @@ t/fonts/type1/adobe/utopia/putr8a.pfb></usr/share/texlive/texmf-dist/fonts/type
 1/adobe/utopia/putri8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/helve
 tic/uhvb8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/helvetic/uhvr8a.p
 fb>
-Output written on Report_Ex2_Hendrik_Vloet.pdf (5 pages, 544606 bytes).
+Output written on Report_Ex2_Hendrik_Vloet.pdf (5 pages, 526725 bytes).
 PDF statistics:
- 61 PDF objects out of 1000 (max. 8388607)
+ 59 PDF objects out of 1000 (max. 8388607)
  32 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
- 41 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 36 words of extra memory for PDF output out of 10000 (max. 10000000)
 

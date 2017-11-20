@@ -171,17 +171,20 @@ Overall one can say a CNN can be easy to implement and lead to very good result,
 \subsection{Task 3: Runtime Comparison}
 
 The runtime comparison shows that the runtime increases exponentially for the increasing number of filters, since the parameters also increases.
-Overall the GPU runtimes are much lower than the CPU runtimes. This is because the GPU memory can be used more efficiently than the CPU\\
+Overall the GPU runtimes are much lower than the CPU runtimes. This is because, the GPU is able to do computations in parallel up to a certain threshold. Beyond this threshold the GPU has to work sequential like the CPU. In our case
+the needed time for CPU computations increases exponentially and the needed time with GPU support increases almost linearly. \\
 
-The filter sizes of 128 and 256 I could not inspect, since the workstation I used terminated due to out-of-memory errors. I attached the error message. The number of parameters missing I calculated by hand, but I could not verify them due to the OOM error(Please take a look at the according file MEMORY\_ERROR.txt in the same directory as the report).\\
-\begin{flalign*}
-& \textbf{Parameters for 128 filters: }\\
-& \left[ (3 \cdot 3 \cdot 1 + 1) \cdot 128 \right]  + \left[ (3 \cdot 3\cdot 128 +1)\cdot 128 \right] + \left[ 7 \cdot 7 \cdot 128 \cdot 128 + 128\right] + \left[ 128 \cdot 10 + 10 \right] = 953098 \\
-& \textbf{Parameters for 256 filters: }\\
-& \left[ (3 \cdot 3 \cdot 1 + 1) \cdot 256 \right]  + \left[ (3 \cdot 3\cdot 256 +1)\cdot 256 \right] + \left[ 7 \cdot 7 \cdot 256 \cdot 128 + 128\right] + \left[ 128 \cdot 10 + 10 \right] = 2198410 \\
-\end{flalign*}
+Initially, I had problems with memory allocations when testing the GPU setting (see corresponding MEMORY\_ERROR.txt file) and because of this I decided to calculate the accumulated testing accuracy and average it. So it is the same computation and slows down the whole process a little bit but it will not drive the GPU into OOM issues.\\
 
-Nevertheless, I can still conclude what was stated above: the usage of GPU is way more efficient than the use of the CPU.\\
+%The filter sizes of 128 and 256 I could not inspect, since the workstation I used terminated due to out-of-memory errors. I attached the error message. The number of parameters missing I calculated by hand, but I could not verify them due to the OOM error(Please take a look at the according file MEMORY\_ERROR.txt in the same directory as the report).\\
+%\begin{flalign*}
+%& \textbf{Parameters for 128 filters: }\\
+%& \left[ (3 \cdot 3 \cdot 1 + 1) \cdot 128 \right]  + \left[ (3 \cdot 3\cdot 128 +1)\cdot 128 \right] + \left[ 7 \cdot 7 \cdot 128 \cdot 128 + 128\right] + \left[ 128 \cdot 10 + 10 \right] = 953098 \\
+%& \textbf{Parameters for 256 filters: }\\
+%& \left[ (3 \cdot 3 \cdot 1 + 1) \cdot 256 \right]  + \left[ (3 \cdot 3\cdot 256 +1)\cdot 256 \right] + \left[ 7 \cdot 7 \cdot 256 \cdot 128 + 128\right] + \left[ 128 \cdot 10 + 10 \right] = 2198410 \\
+%\end{flalign*}
+%
+%Nevertheless, I can still conclude what was stated above: the usage of GPU is way more efficient than the use of the CPU. This is because, the GPU is able to do computations in parallel up to a certain threshold. Beyond this threshold the GPU has to work sequential like the CPU. \\
 
 
 
@@ -195,10 +198,11 @@ Filter depth & 8 & 16 & 32 & 64   \\
 \hline 
 Parameters & 52258 & 104250 & 211690 & 440394   \\ 
 \hline 
-Runtime & 5.8 & 7.4 & 12.5 & 35.3 \\ 
+Runtime [min] & 5.8 & 7.4 & 12.5 & 35.3 \\ 
 \hline
 \end{tabular} }
 \hfill
+
 \scalebox{0.7}{
 \begin{tabular}{|c|c|c|c|c|c|c|}
 \hline
@@ -207,22 +211,25 @@ Runtime & 5.8 & 7.4 & 12.5 & 35.3 \\
 \hline
 Filter depth & 8 & 16 & 32 & 64 & 128 & 256 \\ 
 \hline 
-Parameters Parameters & 52258 & 104250 & 211690 & 440394  & 953098 & 2198410 \\ 
+Parameters Parameters & 52258 & 104250 & 211690 & 440394  & 953098 & 2199690 \\ 
 \hline 
-Runtime & 1.3411 & 1.5256 & 1.9356 & 3.0511 & OOM & OOM \\ 
+Runtime [min] & 1.3 & 1.5 & 1.9 & 3.1 & 6.78  & 14.7 \\ 
 \hline 
 \end{tabular} }
-\begin{minipage}[t]{0.45\textwidth}
-	\includegraphics[width=\textwidth,height=6cm]{runtime_cpu}
-	CPU Runtime vs.  no. of parameters
-\end{minipage}
-\hfill
-\begin{minipage}[t]{0.45\textwidth}
-	\includegraphics[width=\textwidth,height=6cm]{runtime_gpu}
-	GPU Runtime vs. no. of parameters
+%\begin{minipage}[t]{0.45\textwidth}
+%	\includegraphics[width=\textwidth,height=6cm]{runtime_cpu}
+%	CPU Runtime vs.  no. of parameters
+%\end{minipage}
+%\hfill
+%\begin{minipage}[t]{0.45\textwidth}
+%	\includegraphics[width=\textwidth,height=6cm]{runtime_gpu}
+%	GPU Runtime vs. no. of parameters
+%
+%\end{minipage}
 
-\end{minipage}
-
+\begin{figure}[hbpt!]
+	\includegraphics[width=\textwidth,height=10cm]{runtime_comp}
+\end{figure}
 
 
 
