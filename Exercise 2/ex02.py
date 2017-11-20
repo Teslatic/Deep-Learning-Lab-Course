@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 ### import stuff for the tutorials
 
 from __future__ import absolute_import
