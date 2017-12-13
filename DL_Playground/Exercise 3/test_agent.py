@@ -4,13 +4,17 @@ from random import randrange
 # custom modules
 from utils     import Options
 from simulator import Simulator
+import keras
+from keras.models import Sequential,load_model
+from keras.layers import Conv2D, Dense, Dropout, Activation, Flatten, MaxPooling2D
+from keras.optimizers import Adam
 
 # 0. initialization
 opt = Options()
 sim = Simulator(opt.map_ind, opt.cub_siz, opt.pob_siz, opt.act_num)
 
 # TODO: load your agent
-agent =None
+agent = load_model("my_agent.h5")
 
 # 1. control loop
 if opt.disp_on:
@@ -38,7 +42,8 @@ for step in range(opt.eval_steps):
         # TODO: here you would let your agent take its action
         #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         # this just gets a random action
-        action = randrange(opt.act_num)
+        # action = randrange(opt.act_num)
+        
         state = sim.step(action)
 
         epi_step += 1

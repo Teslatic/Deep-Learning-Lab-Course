@@ -4,10 +4,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-
-
-
-
 # custom modules
 
 import argparse
@@ -22,7 +18,7 @@ import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import numpy as np
 import keras
-from keras.models import Sequential
+from keras.models import Sequential,load_model
 from keras.layers import Conv2D, Dense, Dropout, Activation, Flatten, MaxPooling2D
 from keras.optimizers import Adam
 
