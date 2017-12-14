@@ -82,17 +82,15 @@ x_train = x_train.astype("float32")
 x_valid = x_valid.astype("float32")
 
 model = Sequential()
-model.add(Conv2D(32, kernel_size=(3, 3), strides=(2, 2),
+model.add(Conv2D(16, kernel_size=(5, 5), strides=(2, 2),
                  activation='relu',
                  input_shape=input_shape))
-model.add(Conv2D(64, kernel_size=(3, 3), strides=(2, 2),
-                 activation='relu'))
-model.add(Conv2D(128, kernel_size=(3, 3), strides=(2, 2),
+model.add(Conv2D(16, kernel_size=(5, 5), strides=(2, 2),
                  activation='relu'))
 
 
 model.add(Flatten())
-model.add(Dense(1024, activation="relu"))
+model.add(Dense(128, activation="relu"))
 model.add(Dropout(0.5))
 model.add(Dense(opt.act_num, activation='softmax'))
 
@@ -100,9 +98,6 @@ model.compile(loss=keras.losses.categorical_crossentropy,
               optimizer=keras.optimizers.Adam(lr=0.001),
               metrics=['accuracy'])
 
-model.compile(loss=keras.losses.categorical_crossentropy,
-              optimizer=keras.optimizers.Adam(),
-              metrics=['accuracy'])
 
 class AccuracyHistory(keras.callbacks.Callback):
     def on_train_begin(self, logs={}):
@@ -116,7 +111,7 @@ history = AccuracyHistory()
 
 model.fit(x_train, labels_train,
           batch_size=opt.minibatch_size,
-          epochs=opt.eval_nepisodes,
+          epochs=10,
           verbose=1,
           validation_data=(x_valid, labels_valid),
           callbacks=[history])
