@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+
+
 import matplotlib.pyplot as plt
 from random import randrange
 # custom modules

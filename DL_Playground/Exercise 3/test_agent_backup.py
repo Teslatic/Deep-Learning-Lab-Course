@@ -1,35 +1,30 @@
 #!/usr/bin/env python3
 
-import time
 import numpy as np
-import matplotlib
-matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 from random import randrange
 # custom modules
-from utils     import Options, rgb2gray
+from utils     import Options,rgb2gray
 from simulator import Simulator
-
-from keras.models import load_model
-import time
+import keras
+from keras.models import Sequential,load_model
+from keras.layers import Conv2D, Dense, Dropout, Activation, Flatten, MaxPooling2D
+from keras.optimizers import Adam
 from transitionTable import TransitionTable
-
 
 # 0. initialization
 opt = Options()
 sim = Simulator(opt.map_ind, opt.cub_siz, opt.pob_siz, opt.act_num)
+
+# format state history
+state_history = np.zeros((1,opt.pob_siz*opt.cub_siz,opt.pob_siz*opt.cub_siz,opt.hist_len))
 trans = TransitionTable(opt.state_siz, opt.act_num, opt.hist_len,
                              opt.minibatch_size, opt.valid_size,
                              opt.states_fil, opt.labels_fil)
 
-state_history = np.zeros((1,opt.pob_siz*opt.cub_siz,opt.pob_siz*opt.cub_siz,opt.hist_len))
-# TODO: load your agent
-# Hint: If using standard tensorflow api it helps to write your own model.py  
-# file with the network configuration, including a function model.load().
-# You can use saver = tf.train.Saver() and saver.restore(sess, filename_cpkt)
 
-directions = {0:"Nop", 1:"Up", 2:"Down", 3:"Left", 4:"Right"}
-model = load_model('my_agent.h5')
+# TODO: load your agent
+agent = load_model("my_agent.h5")
 
 # 1. control loop
 if opt.disp_on:
@@ -52,34 +47,35 @@ for step in range(opt.eval_steps):
             nepisodes_solved += 1
         # start a new game
         state = sim.newGame(opt.tgt_y, opt.tgt_x)
+        
+        
+        
     else:
         #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         # TODO: here you would let your agent take its action
         #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        # Hint: get the image using rgb2gray(state.pob), append latest image to a history 
         # this just gets a random action
-        
+        # action = randrange(opt.act_num)
+        #model.predict()
         gray_state = rgb2gray(state.pob)
-        gray_state = gray_state.reshape(1,opt.state_siz)
+        gray_state = gray_state.reshape(1,625)
         trans.add_recent(step, gray_state)
         recent = trans.get_recent()
-        recent_shaped = recent.reshape(1,opt.pob_siz*opt.cub_siz,opt.pob_siz*opt.cub_siz,opt.hist_len)
-        
-        # random action
-        #action = randrange(opt.act_num)
-        #state = sim.step(action)
-        
-        
-        # trained model prediction
-        action = model.predict(recent_shaped)
-        print(directions[np.argmax(action)])
-        
-        state = sim.step(np.argmax(action))
-        
-        
+        print("gray state: {}| shape {}".format(gray_state,gray_state.shape))
+        recent_shaped = recent.reshape(1,25,25,opt.hist_len)
 
+        action = agent.predict(recent_shaped)
+
+        state = sim.step(action)
+        
+      
+        #state = sim.step(action)
+        print("state history: {}| shape: {}".format(state_history,state_history.shape))
         
         
+        
+    
+
         epi_step += 1
 
     if state.terminal or epi_step >= opt.early_stop:

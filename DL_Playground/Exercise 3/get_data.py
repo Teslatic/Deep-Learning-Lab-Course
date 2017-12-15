@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+
+import sys
 import numpy as np; np.random.seed(0)
 from random import randrange
 # custom modules
@@ -28,6 +31,7 @@ for step in range(opt.data_steps):
         nepisodes += 1
         state = sim.newGame(opt.tgt_y, opt.tgt_x)
     else:
+        
         state = sim.step() # will perform A* actions
 
     # save data & label
@@ -36,8 +40,9 @@ for step in range(opt.data_steps):
 
     epi_step += 1
 
-    if step % opt.prog_freq == 0:
-        print(step)
+    #if step % opt.prog_freq == 0:
+        #print("\r {}".format(step), end="")
+        #sys.stdout.flush()
 
     if opt.disp_on:
         if win_all is None:
@@ -53,7 +58,7 @@ for step in range(opt.data_steps):
         pl.draw()
 
 # 2. save to disk
-print('saving data ...')
+print('\nsaving data ...')
 np.savetxt(opt.states_fil, states, delimiter=',')
 np.savetxt(opt.labels_fil, labels, delimiter=',')
 print("states saved to " + opt.states_fil)
