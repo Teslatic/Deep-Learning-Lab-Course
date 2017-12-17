@@ -96,6 +96,7 @@ x_valid = x_valid.astype("float32")
 setup = 2
 learning_rate = 0.001
 model = Sequential()
+start_time = time.time()
 
 # standard setup with different optimizers
 # SGD
@@ -190,12 +191,19 @@ tb_callback =keras.callbacks.TensorBoard(log_dir='./Graph/{}'.format(st), write_
 
 model.fit(x_train, labels_train,
           batch_size=opt.minibatch_size,
-          epochs=50,
+          epochs=20,
           verbose=1,
           validation_data=(x_valid, labels_valid),
           callbacks=[tb_callback])
 
+print("---------------------------------------------------------------------------")
 
+end_time = time.time()
+time_needed = (end_time - start_time)/60
+
+
+print("done after {:.4f} min".format(time_needed))
+print("--------------------------------------------------------------------------")
 
 
 # 2. save your trained model
