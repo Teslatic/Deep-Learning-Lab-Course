@@ -9,3 +9,5 @@ __dl_lab_source__: source code from the tutors
 __Exercise 1__: Neural Network from Scratch with Python2, SUBMISSION FOLDER
 
 __Exercise 2__: Introduction into Tensorflow, SUBMISSION FOLDER
+
+__Exercise 3__: Learning from A* by applying a CNN. SUBMISSION FOLDER. Team: Saniea Akhtar, Hendrik Vloet
