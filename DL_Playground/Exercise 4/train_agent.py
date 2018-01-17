@@ -89,8 +89,8 @@ class NeuralNetwork():
         return self.layer_5_output
         
     
-    def predict(self,sess,tensor,data):
-        feed_dict = {tensor:data}
+    def predict(self,sess,x):
+        feed_dict = {self.Qn:x}
         return sess.run(self.layer_5_output,feed_dict) 
     
     
@@ -106,9 +106,7 @@ class NeuralNetwork():
         #print(sess.run(loss, feed_dict = {x : state_batch, u : action_batch, ustar : action_batch_next, xn : next_state_batch, r : reward_batch, term : terminal_batch}))
         
         
-        print(self.Qn)
-        action_batch_next = np.argmax(self.Qn)
-        print(action_batch_next)
+        
         
         print(sess.run(self.loss, feed_dict = {self.x : state_batch, self.u : action_batch, self.ustar : action_batch_next, self.xn : next_state_batch, self.r : reward_batch, self.term : terminal_batch}))
     
@@ -182,6 +180,8 @@ network = NeuralNetwork()
 sess = tf.Session()
 sess.run(tf.global_variables_initializer())
 
+action_batch_next = np.zeros((32,5))
+
 state = sim.newGame(opt.tgt_y, opt.tgt_x)
 state_with_history = np.zeros((opt.hist_len, opt.state_siz))
 append_to_hist(state_with_history, rgb2gray(state.pob).reshape(opt.state_siz))
@@ -201,6 +201,7 @@ for step in range(steps):
     #       remember
     #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     # this just gets a random action
+    
     action = randrange(opt.act_num)
     action_onehot = trans.one_hot_action(action)
     next_state = sim.step(action)
@@ -225,9 +226,6 @@ for step in range(steps):
     #    as an example this is how you could print the loss 
     #print(sess.run(loss, feed_dict = {x : state_batch, u : action_batch, ustar : action_batch_next, xn : next_state_batch, r : reward_batch, term : terminal_batch}))
 
-       
-    prediction = network.predict(sess,,action_batch)
-    
     
     
     # TODO every once in a while you should test your agent here so that you can track its performance
