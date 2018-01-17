@@ -9,7 +9,7 @@ from random import randrange
 from utils     import Options, rgb2gray
 from simulator import Simulator
 from transitionTable import TransitionTable
-
+from collections import defaultdict, namedtuple
 
 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 # NOTE:
@@ -88,6 +88,30 @@ class NeuralNetwork():
         self.layer_5_output = tf.contrib.layers.fully_connected(self.layer_4, opt.act_num, activation_fn=tf.nn.softmax)
         return self.layer_5_output
         
+    def make_epsilon_greedy_policy(self,q_pol, epsilon, nA):
+        """
+        Creates an epsilon-greedy policy based on a given Q-function and epsilon.
+        
+        Args:
+            Q: A dictionary that maps from state -> action-values.
+            Each value is a numpy array of length nA (see below)
+            epsilon: The probability to select a random action . float between 0 and 1.
+            nA: Number of actions in the environment.
+        
+        Returns:
+            A function that takes the observation as an argument and returns
+            the probabilities for each action in the form of a numpy array of length nA. 
+        """
+            
+        def policy_fn(observation):
+            act_prob = np.ones(nA, dtype=float)* epsilon/nA
+            max_action = np.argmax(q_pol[observation])
+            act_prob[max_action] += (1.0-epsilon)
+            
+            return act_prob
+        return policy_fn
+
+    
     
     def predict(self,sess,x):
         feed_dict = {self.Qn:x}
@@ -103,9 +127,7 @@ class NeuralNetwork():
         
         # 2) with that action make an update to the q values
         #    as an example this is how you could print the loss 
-        #print(sess.run(loss, feed_dict = {x : state_batch, u : action_batch, ustar : action_batch_next, xn : next_state_batch, r : reward_batch, term : terminal_batch}))
-        
-        
+        #print(sess.run(loss, feed_dict = {x : state_batch, u : action_batch, ustar : action_batch_next, xn : next_state_batch, r : reward_batch, term : terminal_batch}))    
         
         
         print(sess.run(self.loss, feed_dict = {self.x : state_batch, self.u : action_batch, self.ustar : action_batch_next, self.xn : next_state_batch, self.r : reward_batch, self.term : terminal_batch}))
@@ -176,11 +198,15 @@ steps = 1 * 10**6
 epi_step = 0
 nepisodes = 0
 
+
 network = NeuralNetwork()
 sess = tf.Session()
 sess.run(tf.global_variables_initializer())
 
-action_batch_next = np.zeros((32,5))
+# creating epsilon greedy policy
+q_pol = defaultdict(lambda: np.zeros(opt.act_num))
+policy = network.make_epsilon_greedy_policy(q_pol, 0.4, opt.act_num)
+
 
 state = sim.newGame(opt.tgt_y, opt.tgt_x)
 state_with_history = np.zeros((opt.hist_len, opt.state_siz))
@@ -202,7 +228,11 @@ for step in range(steps):
     #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     # this just gets a random action
     
-    action = randrange(opt.act_num)
+    # act epsilon-greedily
+    action = np.random.choice(np.arange(len(policy(state))),p=policy(state))
+    
+    
+    #action = randrange(opt.act_num)
     action_onehot = trans.one_hot_action(action)
     next_state = sim.step(action)
     # append to history
