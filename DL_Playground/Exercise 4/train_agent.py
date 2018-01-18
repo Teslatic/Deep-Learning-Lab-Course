@@ -252,7 +252,7 @@ for step in range(steps):
     #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     # TODO: here you would train your agent
     #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    print(state)
+    
 
 
 
@@ -272,7 +272,7 @@ for step in range(steps):
     #    as an example this is how you could print the loss
     #print(sess.run(loss, feed_dict = {x : state_batch, u : action_batch, ustar : action_batch_next, xn : next_state_batch, r : reward_batch, term : terminal_batch}))
 
-
+    print("Q prediction: {}".format(network.predict_Q(sess,next_state_batch)))
     print("Qn prediction: {}".format(network.predict_Qn(sess,state_batch)))
 
 
