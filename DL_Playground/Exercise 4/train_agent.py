@@ -21,23 +21,23 @@ from collections import defaultdict, namedtuple
 def make_epsilon_greedy_policy(q_pol, epsilon, nA):
     """
     Creates an epsilon-greedy policy based on a given Q-function and epsilon.
-    
+
     Args:
     Q: A dictionary that maps from state -> action-values.
     Each value is a numpy array of length nA (see below)
     epsilon: The probability to select a random action . float between 0 and 1.
     nA: Number of actions in the environment.
-    
+
     Returns:
     A function that takes the observation as an argument and returns
-    the probabilities for each action in the form of a numpy array of length nA. 
+    the probabilities for each action in the form of a numpy array of length nA.
     """
-    
+
     def policy_fn(observation):
         act_prob = np.ones(nA, dtype=float)* epsilon/nA
         max_action = np.argmax(q_pol[observation])
         act_prob[max_action] += (1.0-epsilon)
-        
+
         return act_prob
     return policy_fn
 
@@ -53,8 +53,8 @@ def Q_loss(Q_s, action_onehot, Q_s_next, best_action_next, reward, terminal, dis
     Required inputs:
     Q_s: a NxA matrix containing the Q values for each action in the sampled states.
             This should be the output of your neural network.
-            We assume that the network implments a function from the state and outputs the 
-            Q value for each action, each output thus is Q(s,a) for one action 
+            We assume that the network implments a function from the state and outputs the
+            Q value for each action, each output thus is Q(s,a) for one action
             (this is easier to implement than adding the action as an additional input to your network)
     action_onehot: a NxA matrix with the one_hot encoded action that was selected in the state
                     (e.g. each row contains only one 1)
@@ -72,7 +72,7 @@ def Q_loss(Q_s, action_onehot, Q_s_next, best_action_next, reward, terminal, dis
     target_q = tf.stop_gradient(target_q)
     # calculate: Q(s, a) where a is simply the action taken to get from s to s'
     selected_q = tf.reduce_sum(action_onehot * Q_s, 1, keep_dims=True)
-    loss = tf.reduce_sum(tf.square(selected_q - target_q))    
+    loss = tf.reduce_sum(tf.square(selected_q - target_q))
     return loss
 
 
@@ -80,13 +80,13 @@ def Q_loss(Q_s, action_onehot, Q_s_next, best_action_next, reward, terminal, dis
 class NeuralNetwork():
     def __init__(self):
         self._build_model()
-   
-        
+
+
     def _build_model(self):
         '''
         Build TF Graph
-        '''   
-        
+        '''
+
         self.x = tf.placeholder(tf.float32, shape=(opt.minibatch_size, opt.hist_len*opt.state_siz))
         self.u = tf.placeholder(tf.float32, shape=(opt.minibatch_size, opt.act_num))
         self.ustar = tf.placeholder(tf.float32, shape=(opt.minibatch_size, opt.act_num))
@@ -100,48 +100,50 @@ class NeuralNetwork():
 
         # calculate the loss
         self.loss = Q_loss(self.Q, self.u, self.Qn, self.ustar, self.r, self.term)
-        
+
         optimizer = tf.train.AdamOptimizer(0.001)
-        
-  
+
+
     def my_network_forward_pass(self,x):
         x_reshaped = tf.reshape(x,shape=[-1,opt.cub_siz*opt.pob_siz,opt.cub_siz*opt.pob_siz,opt.hist_len])
-        self.layer_1 = tf.contrib.layers.conv2d(x_reshaped,8, kernel_size=3, stride=2)
-        self.layer_2 = tf.contrib.layers.conv2d(self.layer_1,32, kernel_size=3, stride=2)
+        self.layer_1 = tf.contrib.layers.conv2d(x_reshaped,8, kernel_size=3, stride=2, padding='VALID')
+        self.layer_2 = tf.contrib.layers.conv2d(self.layer_1,32, kernel_size=3, stride=2, padding='VALID')
         self.layer_3_flat = tf.contrib.layers.flatten(self.layer_2)
         self.layer_4 = tf.contrib.layers.fully_connected(self.layer_3_flat,32, tf.nn.relu)
-        self.layer_5_output = tf.contrib.layers.fully_connected(self.layer_4, opt.act_num, activation_fn=tf.nn.softmax)
+        self.layer_5_output = tf.contrib.layers.fully_connected(self.layer_4, opt.act_num, activation_fn=None)
         return self.layer_5_output
-        
-    
 
-    
-    
-    def predict_Qn(self,sess,x):
-        feed_dict = {self.xn:x}
-        return sess.run(self.Qn,feed_dict) 
-    
-    
+
+    def predict_Q(self,sess,flour):
+        feed_dict = {self.x:flour}
+        return sess.run(self.Q,feed_dict)
+
+
+    def predict_Qn(self,sess,milk):
+        feed_dict = {self.xn:milk}
+        return sess.run(self.Qn,feed_dict)
+
+
     #def train(self,sess):
          ## TODO train me here
         ## this should proceed as follows:
         ## 1) pre-define variables and networks as outlined above
         ## 1) here: calculate best action for next_state_batch
         ## action_batch_next = CALCULATE_ME
-        
+
         ## 2) with that action make an update to the q values
-        ##    as an example this is how you could print the loss 
-        ##print(sess.run(loss, feed_dict = {x : state_batch, u : action_batch, ustar : action_batch_next, xn : next_state_batch, r : reward_batch, term : terminal_batch}))    
-        
-        
+        ##    as an example this is how you could print the loss
+        #print(sess.run(loss, feed_dict = {x : state_batch, u : action_batch, ustar : action_batch_next, xn : next_state_batch, r : reward_batch, term : terminal_batch}))
+
+
         #print(sess.run(self.loss, feed_dict = {self.x : state_batch, self.u : action_batch, self.ustar : action_batch_next, self.xn : next_state_batch, self.r : reward_batch, self.term : terminal_batch}))
-    
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
+
 
 def append_to_hist(state, obs):
     """
@@ -195,7 +197,7 @@ loss = Q_loss(Q, u, Qn, ustar, r, term)
 
 # setup an optimizer in tensorflow to minimize the loss
 """
-    
+
 # lets assume we will train for a total of 1 million steps
 # this is just an example and you might want to change it
 steps = 1 * 10**6
@@ -232,11 +234,11 @@ for step in range(steps):
     #       remember
     #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     # this just gets a random action
-    
+
     # act epsilon-greedily
     #action = np.random.choice(np.arange(len(policy(state))),p=policy(state))
-    
-    
+
+
     action = randrange(opt.act_num)
     action_onehot = trans.one_hot_action(action)
     next_state = sim.step(action)
@@ -251,14 +253,14 @@ for step in range(steps):
     # TODO: here you would train your agent
     #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     print(state)
-    
-    
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
+
+
     state_batch, action_batch, next_state_batch, reward_batch, terminal_batch = trans.sample_minibatch()
     # TODO train me here
     # this should proceed as follows:
@@ -267,15 +269,18 @@ for step in range(steps):
     # TODO:
     # action_batch_next = CALCULATE_ME
     # 2) with that action make an update to the q values
-    #    as an example this is how you could print the loss 
+    #    as an example this is how you could print the loss
     #print(sess.run(loss, feed_dict = {x : state_batch, u : action_batch, ustar : action_batch_next, xn : next_state_batch, r : reward_batch, term : terminal_batch}))
-    
-    
+
+
     print("Qn prediction: {}".format(network.predict_Qn(sess,state_batch)))
 
-    
-    
+
+
     # TODO every once in a while you should test your agent here so that you can track its performance
+
+
+
 
     if opt.disp_on:
         if win_all is None:
@@ -292,4 +297,3 @@ for step in range(steps):
 
 # 2. perform a final test of your model and save it
 # TODO
-
