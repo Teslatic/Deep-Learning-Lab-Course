@@ -18,6 +18,31 @@ from collections import defaultdict, namedtuple
 # you can copy this into your agent class or use it from here
 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+def make_epsilon_greedy_policy(q_pol, epsilon, nA):
+    """
+    Creates an epsilon-greedy policy based on a given Q-function and epsilon.
+    
+    Args:
+    Q: A dictionary that maps from state -> action-values.
+    Each value is a numpy array of length nA (see below)
+    epsilon: The probability to select a random action . float between 0 and 1.
+    nA: Number of actions in the environment.
+    
+    Returns:
+    A function that takes the observation as an argument and returns
+    the probabilities for each action in the form of a numpy array of length nA. 
+    """
+    
+    def policy_fn(observation):
+        act_prob = np.ones(nA, dtype=float)* epsilon/nA
+        max_action = np.argmax(q_pol[observation])
+        act_prob[max_action] += (1.0-epsilon)
+        
+        return act_prob
+    return policy_fn
+
+
+
 
 def Q_loss(Q_s, action_onehot, Q_s_next, best_action_next, reward, terminal, discount=0.99):
     """
@@ -88,49 +113,28 @@ class NeuralNetwork():
         self.layer_5_output = tf.contrib.layers.fully_connected(self.layer_4, opt.act_num, activation_fn=tf.nn.softmax)
         return self.layer_5_output
         
-    def make_epsilon_greedy_policy(self,q_pol, epsilon, nA):
-        """
-        Creates an epsilon-greedy policy based on a given Q-function and epsilon.
-        
-        Args:
-            Q: A dictionary that maps from state -> action-values.
-            Each value is a numpy array of length nA (see below)
-            epsilon: The probability to select a random action . float between 0 and 1.
-            nA: Number of actions in the environment.
-        
-        Returns:
-            A function that takes the observation as an argument and returns
-            the probabilities for each action in the form of a numpy array of length nA. 
-        """
-            
-        def policy_fn(observation):
-            act_prob = np.ones(nA, dtype=float)* epsilon/nA
-            max_action = np.argmax(q_pol[observation])
-            act_prob[max_action] += (1.0-epsilon)
-            
-            return act_prob
-        return policy_fn
+    
 
     
     
-    def predict(self,sess,x):
-        feed_dict = {self.Qn:x}
-        return sess.run(self.layer_5_output,feed_dict) 
+    def predict_Qn(self,sess,x):
+        feed_dict = {self.xn:x}
+        return sess.run(self.Qn,feed_dict) 
     
     
-    def train(self,sess):
-         # TODO train me here
-        # this should proceed as follows:
-        # 1) pre-define variables and networks as outlined above
-        # 1) here: calculate best action for next_state_batch
-        # action_batch_next = CALCULATE_ME
+    #def train(self,sess):
+         ## TODO train me here
+        ## this should proceed as follows:
+        ## 1) pre-define variables and networks as outlined above
+        ## 1) here: calculate best action for next_state_batch
+        ## action_batch_next = CALCULATE_ME
         
-        # 2) with that action make an update to the q values
-        #    as an example this is how you could print the loss 
-        #print(sess.run(loss, feed_dict = {x : state_batch, u : action_batch, ustar : action_batch_next, xn : next_state_batch, r : reward_batch, term : terminal_batch}))    
+        ## 2) with that action make an update to the q values
+        ##    as an example this is how you could print the loss 
+        ##print(sess.run(loss, feed_dict = {x : state_batch, u : action_batch, ustar : action_batch_next, xn : next_state_batch, r : reward_batch, term : terminal_batch}))    
         
         
-        print(sess.run(self.loss, feed_dict = {self.x : state_batch, self.u : action_batch, self.ustar : action_batch_next, self.xn : next_state_batch, self.r : reward_batch, self.term : terminal_batch}))
+        #print(sess.run(self.loss, feed_dict = {self.x : state_batch, self.u : action_batch, self.ustar : action_batch_next, self.xn : next_state_batch, self.r : reward_batch, self.term : terminal_batch}))
     
     
     
@@ -197,6 +201,7 @@ loss = Q_loss(Q, u, Qn, ustar, r, term)
 steps = 1 * 10**6
 epi_step = 0
 nepisodes = 0
+EPSILON = 0.1
 
 
 network = NeuralNetwork()
@@ -205,7 +210,7 @@ sess.run(tf.global_variables_initializer())
 
 # creating epsilon greedy policy
 q_pol = defaultdict(lambda: np.zeros(opt.act_num))
-policy = network.make_epsilon_greedy_policy(q_pol, 0.4, opt.act_num)
+policy = make_epsilon_greedy_policy(q_pol, EPSILON, opt.act_num)
 
 
 state = sim.newGame(opt.tgt_y, opt.tgt_x)
@@ -229,10 +234,10 @@ for step in range(steps):
     # this just gets a random action
     
     # act epsilon-greedily
-    action = np.random.choice(np.arange(len(policy(state))),p=policy(state))
+    #action = np.random.choice(np.arange(len(policy(state))),p=policy(state))
     
     
-    #action = randrange(opt.act_num)
+    action = randrange(opt.act_num)
     action_onehot = trans.one_hot_action(action)
     next_state = sim.step(action)
     # append to history
@@ -245,6 +250,15 @@ for step in range(steps):
     #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     # TODO: here you would train your agent
     #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    print(state)
+    
+    
+    
+    
+    
+    
+    
+    
     state_batch, action_batch, next_state_batch, reward_batch, terminal_batch = trans.sample_minibatch()
     # TODO train me here
     # this should proceed as follows:
@@ -255,6 +269,9 @@ for step in range(steps):
     # 2) with that action make an update to the q values
     #    as an example this is how you could print the loss 
     #print(sess.run(loss, feed_dict = {x : state_batch, u : action_batch, ustar : action_batch_next, xn : next_state_batch, r : reward_batch, term : terminal_batch}))
+    
+    
+    print("Qn prediction: {}".format(network.predict_Qn(sess,state_batch)))
 
     
     
