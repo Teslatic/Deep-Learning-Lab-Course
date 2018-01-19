@@ -85,13 +85,13 @@ class NeuralNetwork():
         self.layer_2 = tf.contrib.layers.conv2d(self.layer_1,64, kernel_size=3, stride=2, padding='VALID')
         self.layer_3 = tf.contrib.layers.conv2d(self.layer_2, 64, kernel_size=3, stride=2, padding = 'VALID')                                        
         self.layer_3_flat = tf.contrib.layers.flatten(self.layer_2)
-        self.layer_4 = tf.contrib.layers.fully_connected(self.layer_3_flat,32, tf.nn.relu)
+        self.layer_4 = tf.contrib.layers.fully_connected(self.layer_3_flat,512, tf.nn.relu)
         self.layer_5_output = tf.contrib.layers.fully_connected(self.layer_4, opt.act_num, activation_fn=None)
         return self.layer_5_output
 
     # here we predict the action values for the next state
-    def predict(self,sess,flour):
-        feed_dict = {self.xn:flour}
+    def predict(self,sess,states):
+        feed_dict = {self.xn:states}
         return sess.run(self.Qn,feed_dict)
 
     # here the network is trained
@@ -161,12 +161,13 @@ loss = Q_loss(Q, u, Qn, ustar, r, term)
 # this is just an example and you might want to change it
 steps = 600000
 
-OBSERVE = 500000
-EXPLORE = 10000
+OBSERVE = 50000
+EXPLORE = 100000
+test_steps = 2000
 
 epi_step = 0
 nepisodes = 0
-INITIAL_EPSILON = 0.9
+INITIAL_EPSILON = 0.7
 FINAL_EPSION = 0.2
 EPSILON = INITIAL_EPSILON
 SHOW_MAP = False
@@ -263,7 +264,59 @@ for step in range(steps):
 
 
 
-    if SHOW_MAP and opt.disp_on:
+    #if SHOW_MAP and opt.disp_on:
+        #if win_all is None:
+            #plt.subplot(121)
+            #win_all = plt.imshow(state.screen)
+            #plt.subplot(122)
+            #win_pob = plt.imshow(state.pob)
+        #else:
+            #win_all.set_data(state.screen)
+            #win_pob.set_data(state.pob)
+        #plt.pause(opt.disp_interval)
+        #plt.draw()
+
+
+# 2. perform a final test of your model and save it
+# TODO
+print("\nnow performing tests")
+
+
+# Test on 500 steps in total
+if opt.disp_on:
+    win_all = None
+    win_pob = None
+
+epi_step = 0
+nepisodes_test = 0
+nepisodes_solved = 0
+action = 0
+
+# Restart game
+state = sim.newGame(opt.tgt_y, opt.tgt_x)
+state_with_history = np.zeros((opt.hist_len, opt.state_siz))
+append_to_hist(state_with_history, rgb2gray(state.pob).reshape(opt.state_siz))
+next_state_with_history = np.copy(state_with_history)
+
+for step in range(500):
+
+    # Check if episode ended and if yes start new game
+    if state.terminal or epi_step >= opt.early_stop:
+        epi_step = 0
+        nepisodes += 1
+        if state.terminal:
+            nepisodes_solved += 1
+        state = sim.newGame(opt.tgt_y, opt.tgt_x)
+        state_with_history[:] = 0
+        append_to_hist(state_with_history, rgb2gray(state.pob).reshape(opt.state_siz))
+        next_state_with_history = np.copy(state_with_history)
+    else:
+        action = np.argmax(network.predict(sess,state_with_history.reshape(1,opt.state_siz*opt.hist_len)))
+        state = sim.step(action)
+        epi_step += 1
+   
+    
+    if opt.disp_on:
         if win_all is None:
             plt.subplot(121)
             win_all = plt.imshow(state.screen)
@@ -273,9 +326,4 @@ for step in range(steps):
             win_all.set_data(state.screen)
             win_pob.set_data(state.pob)
         plt.pause(opt.disp_interval)
-        plt.draw()
-
-
-# 2. perform a final test of your model and save it
-# TODO
-
+plt.draw()
