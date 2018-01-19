@@ -124,23 +124,13 @@ class NeuralNetwork():
         return sess.run(self.Qn,feed_dict)
 
 
-    #def train(self,sess):
-         ## TODO train me here
-        ## this should proceed as follows:
-        ## 1) pre-define variables and networks as outlined above
-        ## 1) here: calculate best action for next_state_batch
-        ## action_batch_next = CALCULATE_ME
+    def train(self,sess,loss):
+        sess.run(self.loss, feed_dict = {self.x : state_batch, self.u : action_batch,
+                    self.ustar : action_batch_next, self.xn : next_state_batch,
+                    self.r : reward_batch, self.term : terminal_batch})
 
-        ## 2) with that action make an update to the q values
-        ##    as an example this is how you could print the loss
-        #print(sess.run(loss, feed_dict = {x : state_batch, u : action_batch, ustar : action_batch_next, xn : next_state_batch, r : reward_batch, term : terminal_batch}))
-
-
-        #print(sess.run(self.loss, feed_dict = {self.x : state_batch, self.u : action_batch, self.ustar : action_batch_next, self.xn : next_state_batch, self.r : reward_batch, self.term : terminal_batch}))
-
-
-
-
+    def act(self,sess,action_batch_next):
+        return np.argmax(action_batch_next[np.random.choice(np.arange(len(action_batch_next)))])
 
 
 
@@ -201,6 +191,7 @@ loss = Q_loss(Q, u, Qn, ustar, r, term)
 # lets assume we will train for a total of 1 million steps
 # this is just an example and you might want to change it
 steps = 1 * 10**6
+# steps = 100
 epi_step = 0
 nepisodes = 0
 EPSILON = 0.1
@@ -214,7 +205,7 @@ sess.run(tf.global_variables_initializer())
 q_pol = defaultdict(lambda: np.zeros(opt.act_num))
 policy = make_epsilon_greedy_policy(q_pol, EPSILON, opt.act_num)
 
-
+next_action = 0
 state = sim.newGame(opt.tgt_y, opt.tgt_x)
 state_with_history = np.zeros((opt.hist_len, opt.state_siz))
 append_to_hist(state_with_history, rgb2gray(state.pob).reshape(opt.state_siz))
@@ -252,15 +243,6 @@ for step in range(steps):
     #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     # TODO: here you would train your agent
     #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    
-
-
-
-
-
-
-
-
     state_batch, action_batch, next_state_batch, reward_batch, terminal_batch = trans.sample_minibatch()
     # TODO train me here
     # this should proceed as follows:
@@ -271,11 +253,33 @@ for step in range(steps):
     # 2) with that action make an update to the q values
     #    as an example this is how you could print the loss
     #print(sess.run(loss, feed_dict = {x : state_batch, u : action_batch, ustar : action_batch_next, xn : next_state_batch, r : reward_batch, term : terminal_batch}))
+    Q_prediction = network.predict_Q(sess,next_state_batch)
+    Qn_prediction = network.predict_Qn(sess,state_batch)
+    # print("Q prediction: {}".format(Q_prediction))
+    # print("Qn prediction: {}".format(Qn_prediction))
+    # print("action batch: {}".format(action_batch))
+    indices = []
+    depth = 5
+    for idx,val in enumerate(Qn_prediction):
+        indices.append(np.argmax(val))
 
-    print("Q prediction: {}".format(network.predict_Q(sess,next_state_batch)))
-    print("Qn prediction: {}".format(network.predict_Qn(sess,state_batch)))
+    # print("one hot indices of Qn prediction: {}".format(indices))
+    tf_action_batch_next = tf.one_hot(indices,depth)
+    # print("size: {}".format(Qn_prediction.shape))
+    # for idx,val in enumerate(Qn_prediction):
+    #     print(Qn_prediction[idx].shape)
+    #     action_batch_next[idx] = trans.one_hot_action(Qn_prediction[idx])
+    # print("one hot action batch next: {}".format(action_batch_next))
 
+    sess_dummy = tf.Session()
+    # convert tf tensor into numpy
+    with sess_dummy as session:
+        action_batch_next=tf_action_batch_next.eval()
 
+    q_loss = Q_loss(Q_prediction,action_batch, Qn_prediction, tf_action_batch_next, reward_batch,
+                    terminal_batch)
+
+    network.train(sess,q_loss)
 
     # TODO every once in a while you should test your agent here so that you can track its performance
 
