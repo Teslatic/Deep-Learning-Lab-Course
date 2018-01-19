@@ -87,12 +87,12 @@ class NeuralNetwork():
         Build TF Graph
         '''
 
-        self.x = tf.placeholder(tf.float32, shape=(opt.minibatch_size, opt.hist_len*opt.state_siz))
-        self.u = tf.placeholder(tf.float32, shape=(opt.minibatch_size, opt.act_num))
-        self.ustar = tf.placeholder(tf.float32, shape=(opt.minibatch_size, opt.act_num))
-        self.xn = tf.placeholder(tf.float32, shape=(opt.minibatch_size, opt.hist_len*opt.state_siz))
-        self.r = tf.placeholder(tf.float32, shape=(opt.minibatch_size, 1))
-        self.term = tf.placeholder(tf.float32, shape=(opt.minibatch_size, 1))
+        self.x = tf.placeholder(tf.float32, shape=(None, opt.hist_len*opt.state_siz))
+        self.u = tf.placeholder(tf.float32, shape=(None, opt.act_num))
+        self.ustar = tf.placeholder(tf.float32, shape=(None, opt.act_num))
+        self.xn = tf.placeholder(tf.float32, shape=(None, opt.hist_len*opt.state_siz))
+        self.r = tf.placeholder(tf.float32, shape=(None, 1))
+        self.term = tf.placeholder(tf.float32, shape=(None, 1))
 
         # get the output from your network
         self.Q = self.my_network_forward_pass(self.x)
@@ -101,11 +101,13 @@ class NeuralNetwork():
         # calculate the loss
         self.loss = Q_loss(self.Q, self.u, self.Qn, self.ustar, self.r, self.term)
 
-        optimizer = tf.train.AdamOptimizer(0.001)
+        optimizer = tf.train.AdamOptimizer(0.0001).minimize(self.loss)
 
 
     def my_network_forward_pass(self,x):
+        #print(x.get_shape())
         x_reshaped = tf.reshape(x,shape=[-1,opt.cub_siz*opt.pob_siz,opt.cub_siz*opt.pob_siz,opt.hist_len])
+        #print(x_reshaped.get_shape())
         self.layer_1 = tf.contrib.layers.conv2d(x_reshaped,8, kernel_size=3, stride=2, padding='VALID')
         self.layer_2 = tf.contrib.layers.conv2d(self.layer_1,32, kernel_size=3, stride=2, padding='VALID')
         self.layer_3_flat = tf.contrib.layers.flatten(self.layer_2)
@@ -124,14 +126,13 @@ class NeuralNetwork():
         return sess.run(self.Qn,feed_dict)
 
 
-    def train(self,sess,loss):
-        sess.run(self.loss, feed_dict = {self.x : state_batch, self.u : action_batch,
+    def train(self,sess,state_batch, action_batch, next_state_batch, reward_batch, terminal_batch):
+        loss = sess.run(self.loss, feed_dict = {self.x : state_batch, self.u : action_batch,
                     self.ustar : action_batch_next, self.xn : next_state_batch,
                     self.r : reward_batch, self.term : terminal_batch})
+        print("loss: {}".format(loss))
 
-    def act(self,sess,action_batch_next):
-        return np.argmax(action_batch_next[np.random.choice(np.arange(len(action_batch_next)))])
-
+  
 
 
 
@@ -191,7 +192,7 @@ loss = Q_loss(Q, u, Qn, ustar, r, term)
 # lets assume we will train for a total of 1 million steps
 # this is just an example and you might want to change it
 steps = 1 * 10**6
-# steps = 100
+#steps = 100
 epi_step = 0
 nepisodes = 0
 EPSILON = 0.1
@@ -205,7 +206,6 @@ sess.run(tf.global_variables_initializer())
 q_pol = defaultdict(lambda: np.zeros(opt.act_num))
 policy = make_epsilon_greedy_policy(q_pol, EPSILON, opt.act_num)
 
-next_action = 0
 state = sim.newGame(opt.tgt_y, opt.tgt_x)
 state_with_history = np.zeros((opt.hist_len, opt.state_siz))
 append_to_hist(state_with_history, rgb2gray(state.pob).reshape(opt.state_siz))
@@ -228,9 +228,14 @@ for step in range(steps):
 
     # act epsilon-greedily
     #action = np.random.choice(np.arange(len(policy(state))),p=policy(state))
-
-
-    action = randrange(opt.act_num)
+    
+    if step>1000:
+        action = np.argmax(network.predict_Qn(sess,state_with_history.reshape(-1,opt.state_siz*opt.hist_len)))
+        print("Action: {}".format(action))
+    else:
+        action = randrange(opt.act_num)
+        print(step)
+        
     action_onehot = trans.one_hot_action(action)
     next_state = sim.step(action)
     # append to history
@@ -244,6 +249,7 @@ for step in range(steps):
     # TODO: here you would train your agent
     #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     state_batch, action_batch, next_state_batch, reward_batch, terminal_batch = trans.sample_minibatch()
+    '''
     # TODO train me here
     # this should proceed as follows:
     # 1) pre-define variables and networks as outlined above
@@ -253,34 +259,32 @@ for step in range(steps):
     # 2) with that action make an update to the q values
     #    as an example this is how you could print the loss
     #print(sess.run(loss, feed_dict = {x : state_batch, u : action_batch, ustar : action_batch_next, xn : next_state_batch, r : reward_batch, term : terminal_batch}))
-    Q_prediction = network.predict_Q(sess,next_state_batch)
+    #Q_prediction = network.predict_Q(sess,next_state_batch)
+    '''
     Qn_prediction = network.predict_Qn(sess,state_batch)
+    
     # print("Q prediction: {}".format(Q_prediction))
     # print("Qn prediction: {}".format(Qn_prediction))
     # print("action batch: {}".format(action_batch))
-    indices = []
-    depth = 5
-    for idx,val in enumerate(Qn_prediction):
-        indices.append(np.argmax(val))
+    
+    
+    indices =np.transpose(np.argmax(Qn_prediction,1)[np.newaxis])    
+    action_batch_next= trans.one_hot_action(indices)
+    
 
-    # print("one hot indices of Qn prediction: {}".format(indices))
-    tf_action_batch_next = tf.one_hot(indices,depth)
-    # print("size: {}".format(Qn_prediction.shape))
-    # for idx,val in enumerate(Qn_prediction):
-    #     print(Qn_prediction[idx].shape)
-    #     action_batch_next[idx] = trans.one_hot_action(Qn_prediction[idx])
-    # print("one hot action batch next: {}".format(action_batch_next))
 
-    sess_dummy = tf.Session()
-    # convert tf tensor into numpy
-    with sess_dummy as session:
-        action_batch_next=tf_action_batch_next.eval()
 
-    q_loss = Q_loss(Q_prediction,action_batch, Qn_prediction, tf_action_batch_next, reward_batch,
-                    terminal_batch)
-
-    network.train(sess,q_loss)
-
+    #q_loss = Q_loss(Q_prediction,action_batch, Qn_prediction, tf_action_batch_next, reward_batch,
+                    #terminal_batch)
+    #loss = sess.run(loss, feed_dict = {self.x : state_batch, self.u : action_batch, self.ustar : action_batch_next, self.xn : next_state_batch,
+                    #self.r : reward_batch, self.term : terminal_batch})
+    network.train(sess,state_batch, action_batch, next_state_batch, reward_batch, terminal_batch)
+    
+    
+    
+    
+    
+    
     # TODO every once in a while you should test your agent here so that you can track its performance
 
 
