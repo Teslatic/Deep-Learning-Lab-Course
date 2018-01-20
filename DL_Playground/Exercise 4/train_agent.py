@@ -1,4 +1,5 @@
 from __future__ import print_function
+from __future__ import division
 
 import numpy as np
 import matplotlib
@@ -15,6 +16,7 @@ from transitionTable import TransitionTable
 from collections import defaultdict, namedtuple
 import random
 import sys
+import os
 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 # NOTE:
 # this is a little helper function that calculates the Q error for you
@@ -83,18 +85,19 @@ class NeuralNetwork():
         # calculate the loss
         self.loss = Q_loss(self.Q, self.u, self.Qn, self.ustar, self.r, self.term)
 
-        optimizer = tf.train.AdamOptimizer(0.00001).minimize(self.loss)
+        optimizer = tf.train.AdamOptimizer(0.5e-5).minimize(self.loss)
 
 
     def my_network_forward_pass(self,x):
         with tf.variable_scope("DQN",reuse=tf.AUTO_REUSE):
             x_reshaped = tf.reshape(x,shape=[-1,opt.cub_siz*opt.pob_siz,opt.cub_siz*opt.pob_siz,opt.hist_len])
             self.layer_1 = tf.contrib.layers.conv2d(x_reshaped,32, kernel_size=3, stride=2, padding='VALID')
-            self.layer_2 = tf.contrib.layers.conv2d(self.layer_1,64, kernel_size=3, stride=2, padding='VALID')
-            self.layer_3 = tf.contrib.layers.conv2d(self.layer_2, 64, kernel_size=3, stride=2, padding = 'VALID')
-            self.layer_3_flat = tf.contrib.layers.flatten(self.layer_2)
+            self.layer_2 = tf.contrib.layers.conv2d(self.layer_1,64, kernel_size=3, stride=1, padding='VALID')
+            self.layer_3 = tf.contrib.layers.conv2d(self.layer_2, 64, kernel_size=3, stride=1, padding = 'VALID')
+            self.layer_3_flat = tf.contrib.layers.flatten(self.layer_3)
             self.layer_4 = tf.contrib.layers.fully_connected(self.layer_3_flat,512, tf.nn.relu)
-            self.layer_5_output = tf.contrib.layers.fully_connected(self.layer_4, opt.act_num, activation_fn=None)
+            self.layer_4_dropout = tf.contrib.layers.dropout(self.layer_4,0.5)
+            self.layer_5_output = tf.contrib.layers.fully_connected(self.layer_4_dropout, opt.act_num, activation_fn=None)
             return self.layer_5_output
 
     # here we predict the action values for the next state
@@ -107,6 +110,7 @@ class NeuralNetwork():
         loss = sess.run(self.loss, feed_dict = {self.x : state_batch, self.u : action_batch,
                     self.ustar : action_batch_next, self.xn : next_state_batch,
                     self.r : reward_batch, self.term : terminal_batch})
+
         return loss
 
 
@@ -170,172 +174,191 @@ print(get_available_devices())
 
 # lets assume we will train for a total of 1 million steps
 # this is just an example and you might want to change it
-steps = 600000
+steps = 1000000
 
-OBSERVE = 50000
 EXPLORE = 100000
-test_steps = 2000
+test_steps = 500
 
 epi_step = 0
 nepisodes = 0
-INITIAL_EPSILON = 0.7
-FINAL_EPSION = 0.2
+INITIAL_EPSILON = 1.0
+FINAL_EPSION = 0.1
 EPSILON = INITIAL_EPSILON
 SHOW_MAP = False
+
+
+
+
 
 network = NeuralNetwork()
 config = tf.ConfigProto()
 config.gpu_options.allow_growth = True
 sess = tf.Session(config=config)
-sess.run(tf.global_variables_initializer())
-
-success = 0
-cnt=0
-state = sim.newGame(opt.tgt_y, opt.tgt_x)
-state_with_history = np.zeros((opt.hist_len, opt.state_siz))
-append_to_hist(state_with_history, rgb2gray(state.pob).reshape(opt.state_siz))
-next_state_with_history = np.copy(state_with_history)
-for step in range(steps):
-    if state.terminal or epi_step >= opt.early_stop:
-        if state.terminal and SHOW_MAP:
-            success += 1
-            print("Succeeded {} times".format(success))
-        epi_step = 0
-        nepisodes += 1
-        # reset the game
-        state = sim.newGame(opt.tgt_y, opt.tgt_x)
-        # and reset the history
-        state_with_history[:] = 0
-        append_to_hist(state_with_history, rgb2gray(state.pob).reshape(opt.state_siz))
-        next_state_with_history = np.copy(state_with_history)
-    #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    # TODO: here you would let your agent take its action
-    #       remember
-    #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    # this just gets a random action
-
-    # act with decaying epsilon
-    if random.random() <= EPSILON:
-        # Random action
-        action = randrange(opt.act_num)
-
-        if not SHOW_MAP:
-            print("\rExploration step {}/{}".format(step,OBSERVE),end="")
-            sys.stdout.flush()
-    else:
-        action = np.argmax(network.predict(sess,state_with_history.reshape(1,opt.state_siz*opt.hist_len)))
 
 
-    if(EPSILON>FINAL_EPSION and step>OBSERVE):
-        EPSILON -= ((INITIAL_EPSILON-FINAL_EPSION)/EXPLORE)
+with sess as sess:
+    sess.run(tf.global_variables_initializer())
+    saver = tf.train.Saver()
+    success = 0
+    rnd = 0
+    greedy = 0
+    state = sim.newGame(opt.tgt_y, opt.tgt_x)
+    state_with_history = np.zeros((opt.hist_len, opt.state_siz))
+    append_to_hist(state_with_history, rgb2gray(state.pob).reshape(opt.state_siz))
+    next_state_with_history = np.copy(state_with_history)
+    for step in range(steps):
+        if state.terminal or epi_step >= opt.early_stop:
+            if state.terminal and SHOW_MAP:
+                success += 1
+                epi_step = 0
+            nepisodes += 1
+            # reset the game
+            state = sim.newGame(opt.tgt_y, opt.tgt_x)
+            # and reset the history
+            state_with_history[:] = 0
+            append_to_hist(state_with_history, rgb2gray(state.pob).reshape(opt.state_siz))
+            next_state_with_history = np.copy(state_with_history)
+        #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        # TODO: here you would let your agent take its action
+        #       remember
+        #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        # this just gets a random action
+
+        # act with decaying epsilon
+        if random.random() <= EPSILON:
+            # Random action
+            action = randrange(opt.act_num)
+            pol_string = 'random'
+            rnd += 1
+        else:
+            action = np.argmax(network.predict(sess,state_with_history.reshape(1,opt.state_siz*opt.hist_len)))
+            pol_string = 'greedy'
+            greedy += 1
+
+        if(EPSILON>FINAL_EPSION):
+            EPSILON -= ((INITIAL_EPSILON-FINAL_EPSION)/EXPLORE)
 
 
-    action_onehot = trans.one_hot_action(action)
-    next_state = sim.step(action)
-    # append to history
-    append_to_hist(next_state_with_history, rgb2gray(next_state.pob).reshape(opt.state_siz))
-    # add to the transition table
-    trans.add(state_with_history.reshape(-1), action_onehot, next_state_with_history.reshape(-1), next_state.reward, next_state.terminal)
-    # mark next state as current state
-    state_with_history = np.copy(next_state_with_history)
-    state = next_state
-    #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    # TODO: here you would train your agent
-    #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        action_onehot = trans.one_hot_action(action)
+        next_state = sim.step(action)
+        # append to history
+        append_to_hist(next_state_with_history, rgb2gray(next_state.pob).reshape(opt.state_siz))
+        # add to the transition table
+        trans.add(state_with_history.reshape(-1), action_onehot, next_state_with_history.reshape(-1), next_state.reward, next_state.terminal)
+        # mark next state as current state
+        state_with_history = np.copy(next_state_with_history)
+        state = next_state
+        #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        # TODO: here you would train your agent
+        #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-    SHOW_MAP = True
-    state_batch, action_batch, next_state_batch, reward_batch, terminal_batch = trans.sample_minibatch()
-    '''
-    # TODO train me here
-    # this should proceed as follows:
-    # 1) pre-define variables and networks as outlined above
-    # 1) here: calculate best action for next_state_batch
-    # TODO:
-    # action_batch_next = CALCULATE_ME
-    # 2) with that action make an update to the q values
-    #    as an example this is how you could print the loss
-    #print(sess.run(loss, feed_dict = {x : state_batch, u : action_batch, ustar : action_batch_next, xn : next_state_batch, r : reward_batch, term : terminal_batch}))
-    #Q_prediction = network.predict_Q(sess,next_state_batch)
-    '''
-
-
-    # predict the Qn values for the following state
-    Qn = network.predict(sess,state_batch)
-
-    # pick hihgest Q value and convert into a one-hot vector in order to get the next action
-    indices = np.transpose(np.argmax(Qn,1)[np.newaxis])
-    action_batch_next= trans.one_hot_action(indices)
+        SHOW_MAP = True
+        state_batch, action_batch, next_state_batch, reward_batch, terminal_batch = trans.sample_minibatch()
+        '''
+        # TODO train me here
+        # this should proceed as follows:
+        # 1) pre-define variables and networks as outlined above
+        # 1) here: calculate best action for next_state_batch
+        # TODO:
+        # action_batch_next = CALCULATE_ME
+        # 2) with that action make an update to the q values
+        #    as an example this is how you could print the loss
+        #print(sess.run(loss, feed_dict = {x : state_batch, u : action_batch, ustar : action_batch_next, xn : next_state_batch, r : reward_batch, term : terminal_batch}))
+        #Q_prediction = network.predict_Q(sess,next_state_batch)
+        '''
 
 
-    loss = network.train(sess,state_batch, action_batch, next_state_batch, reward_batch, terminal_batch)
-    print("\rTraining step {}/{} | Loss: {}".format(step,steps,loss),end=" ")
-    sys.stdout.flush()
+        # predict the Qn values for the following state
+        Qn = network.predict(sess,state_batch)
+
+        # pick hihgest Q value and convert into a one-hot vector in order to get the next action
+        indices = np.transpose(np.argmax(Qn,1)[np.newaxis])
+        action_batch_next= trans.one_hot_action(indices)
 
 
-    # TODO every once in a while you should test your agent here so that you can track its performance
+        loss = network.train(sess,state_batch, action_batch, next_state_batch, reward_batch, terminal_batch)
+        if step%1000==0:
+            print("Training step {}/{}\t|Loss: {:.4f}\t|Epsilon: {:.2f}\t|Epsilon greedy ratio: {:.2f}".format(step,steps,loss,EPSILON,
+                                                                                                               greedy/(rnd+1e-12)))
+        
+        
+#/home/vloeth/Deep-Learning-Lab-Course/DL_Playground/Exercise 4
+
+        # TODO every once in a while you should test your agent here so that you can track its performance
 
 
-
-    #if SHOW_MAP and opt.disp_on:
-        #if win_all is None:
-            #plt.subplot(121)
-            #win_all = plt.imshow(state.screen)
-            #plt.subplot(122)
-            #win_pob = plt.imshow(state.pob)
-        #else:
-            #win_all.set_data(state.screen)
-            #win_pob.set_data(state.pob)
-        #plt.pause(opt.disp_interval)
-        #plt.draw()
-
+        #if SHOW_MAP and opt.disp_on:
+            #if win_all is None:
+                #plt.subplot(121)
+                #win_all = plt.imshow(state.screen)
+                #plt.subplot(122)
+                #win_pob = plt.imshow(state.pob)
+            #else:
+                #win_all.set_data(state.screen)
+                #win_pob.set_data(state.pob)
+            #plt.pause(opt.disp_interval)
+            #plt.draw()
+        
+        # save the trained model
+                
+       
+        
+    path = "/home/vloeth/Deep-Learning-Lab-Course/DL_Playground/Exercise 4/models/"
+    n_files = len(os.walk(path).next()[1])
+    
+    save_path = saver.save(sess, "/home/vloeth/Deep-Learning-Lab-Course/DL_Playground/Exercise 4/models/saves_{}/model.ckpt".format(n_files))
+    
+    
 
 # 2. perform a final test of your model and save it
 # TODO
 print("\nnow performing tests")
-
-
-# Test on 500 steps in total
-if opt.disp_on:
-    win_all = None
-    win_pob = None
-
-epi_step = 0
-nepisodes_test = 0
-nepisodes_solved = 0
-action = 0
-
-# Restart game
-state = sim.newGame(opt.tgt_y, opt.tgt_x)
-state_with_history = np.zeros((opt.hist_len, opt.state_siz))
-append_to_hist(state_with_history, rgb2gray(state.pob).reshape(opt.state_siz))
-next_state_with_history = np.copy(state_with_history)
-
-for step in range(500):
-
-    # Check if episode ended and if yes start new game
-    if state.terminal or epi_step >= opt.early_stop:
-        epi_step = 0
-        nepisodes += 1
-        if state.terminal:
-            nepisodes_solved += 1
-        state = sim.newGame(opt.tgt_y, opt.tgt_x)
-        state_with_history[:] = 0
-        append_to_hist(state_with_history, rgb2gray(state.pob).reshape(opt.state_siz))
-        next_state_with_history = np.copy(state_with_history)
-    else:
-        action = np.argmax(network.predict(sess,state_with_history.reshape(1,opt.state_siz*opt.hist_len)))
-        state = sim.step(action)
-        epi_step += 1
-
-
+with tf.Session() as sess:
+    # load model
+    saver.restore(sess, "/home/vloeth/Deep-Learning-Lab-Course/DL_Playground/Exercise 4/models/saves_{}/model.ckpt".format(n_files))
+    print("model loaded")
+    
     if opt.disp_on:
-        if win_all is None:
-            plt.subplot(121)
-            win_all = plt.imshow(state.screen)
-            plt.subplot(122)
-            win_pob = plt.imshow(state.pob)
+        win_all = None
+        win_pob = None
+
+    epi_step = 0
+    nepisodes_test = 0
+    nepisodes_solved = 0
+    action = 0
+
+    # Restart game
+    state = sim.newGame(opt.tgt_y, opt.tgt_x)
+    state_with_history = np.zeros((opt.hist_len, opt.state_siz))
+    append_to_hist(state_with_history, rgb2gray(state.pob).reshape(opt.state_siz))
+    next_state_with_history = np.copy(state_with_history)
+
+    for step in range(500):
+
+        # Check if episode ended and if yes start new game
+        if state.terminal or epi_step >= opt.early_stop:
+            epi_step = 0
+            nepisodes += 1
+            if state.terminal:
+                nepisodes_solved += 1
+            state = sim.newGame(opt.tgt_y, opt.tgt_x)
+            state_with_history[:] = 0
+            append_to_hist(state_with_history, rgb2gray(state.pob).reshape(opt.state_siz))
+            next_state_with_history = np.copy(state_with_history)
         else:
-            win_all.set_data(state.screen)
-            win_pob.set_data(state.pob)
-        plt.pause(opt.disp_interval)
-plt.draw()
+            action = np.argmax(network.predict(sess,state_with_history.reshape(1,opt.state_siz*opt.hist_len)))
+            state = sim.step(action)
+            epi_step += 1
+
+
+        if opt.disp_on:
+            if win_all is None:
+                plt.subplot(121)
+                win_all = plt.imshow(state.screen)
+                plt.subplot(122)
+                win_pob = plt.imshow(state.pob)
+            else:
+                win_all.set_data(state.screen)
+                win_pob.set_data(state.pob)
+            plt.pause(opt.disp_interval)
+    plt.draw()
