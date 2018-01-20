@@ -1,0 +1,2 @@
+model_checkpoint_path: "/home/vloeth/Deep-Learning-Lab-Course/DL_Playground/Exercise 4/models/saves_2/model.ckpt"
+all_model_checkpoint_paths: "/home/vloeth/Deep-Learning-Lab-Course/DL_Playground/Exercise 4/models/saves_2/model.ckpt"

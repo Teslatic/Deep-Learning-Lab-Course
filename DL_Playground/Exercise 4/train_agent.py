@@ -85,7 +85,7 @@ class NeuralNetwork():
         # calculate the loss
         self.loss = Q_loss(self.Q, self.u, self.Qn, self.ustar, self.r, self.term)
 
-        optimizer = tf.train.AdamOptimizer(0.5e-5).minimize(self.loss)
+        optimizer = tf.train.AdamOptimizer(1e-6).minimize(self.loss)
 
 
     def my_network_forward_pass(self,x):
@@ -176,7 +176,7 @@ print(get_available_devices())
 # this is just an example and you might want to change it
 steps = 1000000
 
-EXPLORE = 100000
+EXPLORE = 200000
 test_steps = 500
 
 epi_step = 0
@@ -200,7 +200,8 @@ with sess as sess:
     sess.run(tf.global_variables_initializer())
     saver = tf.train.Saver()
     success = 0
-    rnd = 0
+    # small number to prevent division by zero
+    rnd = 1e-18
     greedy = 0
     state = sim.newGame(opt.tgt_y, opt.tgt_x)
     state_with_history = np.zeros((opt.hist_len, opt.state_siz))
@@ -228,11 +229,9 @@ with sess as sess:
         if random.random() <= EPSILON:
             # Random action
             action = randrange(opt.act_num)
-            pol_string = 'random'
             rnd += 1
         else:
             action = np.argmax(network.predict(sess,state_with_history.reshape(1,opt.state_siz*opt.hist_len)))
-            pol_string = 'greedy'
             greedy += 1
 
         if(EPSILON>FINAL_EPSION):
@@ -252,7 +251,6 @@ with sess as sess:
         # TODO: here you would train your agent
         #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-        SHOW_MAP = True
         state_batch, action_batch, next_state_batch, reward_batch, terminal_batch = trans.sample_minibatch()
         '''
         # TODO train me here
