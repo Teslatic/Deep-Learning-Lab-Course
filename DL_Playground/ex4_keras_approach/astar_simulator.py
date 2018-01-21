@@ -119,7 +119,7 @@ class Simulator:
             for act_ind in range(self.act_num):
                 neighb_pose = self.astar_act(active_pose[0], active_pose[1], tgt_y, tgt_x, act_ind)
                 if self.astar_terminal: # have reached tgt, stop searching
-                    self.success += 1                    
+                    self.success += 1
                     came_from[neighb_pose] = (active_pose, act_ind)
                     self.astar_retrieve_actions(came_from, bot_y, bot_x, tgt_y, tgt_x)
                     return True
@@ -144,6 +144,7 @@ class Simulator:
         bot_pos_new[1] = bot_x + self.act_pos_ind[act_ind][1]
         if bot_pos_new[0] == tgt_y and bot_pos_new[1] == tgt_x: # reaching tgt
             self.astar_terminal = True
+                
             return (bot_pos_new[0], bot_pos_new[1])
         elif self.map[bot_pos_new[0]][bot_pos_new[1]] == 1: # collision
             return (bot_y, bot_x)

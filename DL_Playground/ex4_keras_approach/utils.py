@@ -3,7 +3,7 @@ import numpy as np
 class Options:
     #
     disp_on = True # you might want to set it to False for speed
-    map_ind = 1
+    map_ind = 0
     change_tgt = False
     states_fil = "states.csv"
     labels_fil = "labels.csv"
@@ -17,7 +17,7 @@ class Options:
         # this defines the goal positionw
         tgt_y = 12
         tgt_x = 11
-        early_stop = 50
+        early_stop = 150
     elif map_ind == 1:
         cub_siz = 10
         pob_siz = 3 # for partial observation

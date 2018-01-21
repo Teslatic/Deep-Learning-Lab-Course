@@ -4,6 +4,7 @@ import matplotlib
 matplotlib.use('TkAgg')
 import tensorflow as tf
 import matplotlib.pyplot as plt
+from matplotlib.axes import Axes
 from random import randrange
 import tensorflow as tf
 import keras
@@ -18,7 +19,7 @@ from utils     import Options, rgb2gray
 from simulator import Simulator
 from transitionTable import TransitionTable
 from astar_demo import astar_solver
-from train_agent import Agent
+from agent import Agent, helper_save, append_to_hist, print_timestamp
 import argparse
 import sys
 #sys.path.append('..')
@@ -28,15 +29,7 @@ import datetime
 
 #################### TESTING AREA ############################
 
-## LOAD MODEL ################################################
 
-# creat a test agent
-test_agent = Agent()
-parser.add_argument("-w", "--weights", help=".h5 weights_file_name for conv network",
-                    default=opt.weights_fil)
-args = parser.parse_args()
-weights_file_name = args.weights
-test_agent.load(weights_file_name)
 
 
 ## INITIALIZATION ############################################
@@ -52,20 +45,44 @@ episode_reward = 0
 disp_progress = False
 
 
-N_EPISODES_TOTAL_TEST = 10#00
-DISP_PROGRESS_AFTER_N_EPISODES = 1 
+TEST_EPISODES = 200
+SHOW_PROGRESS = 1 
 
+
+opt = Options()
+sim = Simulator(opt.map_ind, opt.cub_siz, opt.pob_siz, opt.act_num)
+# setup a large transitiontable that is filled during training
+maxlen = 100000
+trans = TransitionTable(opt.state_siz, opt.act_num, opt.hist_len,
+                        opt.minibatch_size, maxlen)
+opt.disp = True
+
+
+
+
+## LOAD MODEL ################################################
+
+# creat a test agent
+test_agent = Agent()
+parser.add_argument("-w", "--weights", help=".h5 weights_file_name for conv network",
+                    default=opt.weights_fil)
+args = parser.parse_args()
+weights_file_name = args.weights
+test_agent.load(weights_file_name)
 
 ###############################################################
-
 # create astar solver and execute n times initally to generate metric to compare agent
-astar = astar_solver(N_EPISODES_TOTAL_TEST)
-
-print("A-Star: {}/{} solved\t| average steps needed: {:.2f}".format(astar.sim.success,N_EPISODES_TOTAL_TEST,np.mean(astar.list_epi_steps)))
+astar = astar_solver(TEST_EPISODES,False)
+print("A-Star: {}/{} solved\t| average steps needed: {:.2f}".format(astar.sim.success,TEST_EPISODES,np.mean(astar.list_epi_steps)))
 
 nepisodes_solved_cnt = 0
 termin_state = []
 
+opt.disp = False
+if opt.disp_on:
+    win_all = None
+    win_pob = None
+state = sim.newGame(opt.tgt_y, opt.tgt_x)
 
 state_with_history = np.zeros((opt.hist_len, opt.state_siz))
 append_to_hist(state_with_history, rgb2gray(state.pob).reshape(opt.state_siz))
@@ -74,21 +91,22 @@ next_state_with_history = np.copy(state_with_history)
 
 
 
-while nepisodes < N_EPISODES_TOTAL_TEST:
-    if state.terminal or epi_step >= opt.early_stop or episode_reward < -10 :
-        disp_progress = True if nepisodes % DISP_PROGRESS_AFTER_N_EPISODES == 0 else False
+while nepisodes < TEST_EPISODES:
+    if state.terminal or epi_step >= opt.early_stop: 
+        disp_progress = True if nepisodes % SHOW_PROGRESS == 0 else False
         nepisodes += 1
         if state.terminal:
             nepisodes_solved_cnt +=1
-            print("nepisodes_solved: {}".format(nepisodes_solved_cnt))
+           
 
-        print("played {}/{} episodes, episode_reward: {:.2}, epi_step {}"
-                      .format(nepisodes,N_EPISODES_TOTAL_TEST, episode_reward,epi_step ))
+        print("Tested Episode {}/{}\t| Reward per Episode: {:.2}\t|Steeps needed {}"
+                      .format(nepisodes,TEST_EPISODES, episode_reward,epi_step ))
         termin_state.append(state.terminal)
         epi_step_hist.append(epi_step)
         episode_reward_hist.append(episode_reward)
         episode_reward = 0
         epi_step = 0
+        state = sim.newGame(opt.tgt_y, opt.tgt_x)
         #astar_steps,state =start_new_game()
         #astar_steps_hist.append(astar_steps)
 
@@ -128,13 +146,26 @@ epi_step_hist =np.array(epi_step_hist)
 
 delta_astar = np.mean(astar.list_epi_steps) - np.mean(epi_step_hist)
 print("==============================")
-print("success rate of the agent: {}".format(nepisodes_solved_cnt/N_EPISODES_TOTAL_TEST))
+print("success rate of the agent: {}".format(nepisodes_solved_cnt/TEST_EPISODES))
 print("mean diff to astare if successful {}".format(delta_astar))
 
 
+ymin, ymax = 0, opt.early_stop
+
+
+plt.figure()
+plt.ylim(0,opt.early_stop)
+plt.plot(epi_step_hist,label="DQN-Agent")
+plt.plot(astar.list_epi_steps,label="A*")
+plt.title("Comparison of needed Steps per Episode")
+plt.xlabel("Episode")
+plt.ylabel("Steps")
+plt.legend()
 
 
 
+
+plt.show()
 
 
 
