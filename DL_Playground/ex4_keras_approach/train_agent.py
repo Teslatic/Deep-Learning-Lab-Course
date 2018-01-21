@@ -182,24 +182,30 @@ while nepisodes < TRAINING_EPISODES:
         plt.draw()
         
         
-        
-plt.figure()
+plt.ioff()        
+fig = plt.figure()
 plt.title("Reward over time")
 plt.plot(list_episode_reward, label="Agent")
 plt.xlabel("Episode")
 plt.ylabel("Reward")
 plt.legend()
+plt.savefig('/home/vloeth/Deep-Learning-Lab-Course/DL_Playground/ex4_keras_approach/tmp/test0.png')
+plt.close(fig)
 
 
+
+
+fig = plt.figure()
 plt.figure()
 plt.title("Decaying Epsilon")
 plt.plot(list_epsilon, label="Agent")
 plt.xlabel("total timesteps")
 plt.ylabel("Epsilon")
 plt.legend()
+plt.savefig('/home/vloeth/Deep-Learning-Lab-Course/DL_Playground/ex4_keras_approach/tmp/test1.png')
+plt.close(fig)
 
-
-plt.show()
+#plt.show()
         
 
         
