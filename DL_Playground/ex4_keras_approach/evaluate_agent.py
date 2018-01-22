@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import numpy as np
 import matplotlib
 matplotlib.use('TkAgg')
@@ -76,7 +76,7 @@ astar = astar_solver(TEST_EPISODES,False)
 print("A-Star: {}/{} solved\t| average steps needed: {:.2f}".format(astar.sim.success,TEST_EPISODES,np.mean(astar.list_epi_steps)))
 
 nepisodes_solved_cnt = 0
-termin_state = []
+#termin_state = []
 
 opt.disp = False
 if opt.disp_on:
@@ -93,7 +93,7 @@ next_state_with_history = np.copy(state_with_history)
 
 while nepisodes < TEST_EPISODES:
     if state.terminal or epi_step >= opt.early_stop: 
-        disp_progress = True if nepisodes % SHOW_PROGRESS == 0 else False
+        #disp_progress = True if nepisodes % SHOW_PROGRESS == 0 else False
         nepisodes += 1
         if state.terminal:
             nepisodes_solved_cnt +=1
@@ -101,7 +101,7 @@ while nepisodes < TEST_EPISODES:
 
         print("Tested Episode {}/{}\t| Reward per Episode: {:.2}\t|Steeps needed {}"
                       .format(nepisodes,TEST_EPISODES, episode_reward,epi_step ))
-        termin_state.append(state.terminal)
+        #termin_state.append(state.terminal)
         epi_step_hist.append(epi_step)
         episode_reward_hist.append(episode_reward)
         episode_reward = 0

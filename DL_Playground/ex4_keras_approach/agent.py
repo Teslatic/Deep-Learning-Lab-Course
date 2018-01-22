@@ -29,7 +29,8 @@ class Agent:
         self.init_epsilon = 1.0
         self.final_epsilon = 0.1
         self.epsilon = self.init_epsilon
-        self.eps_decay_rate = 0.99
+        # map A: 0.003, map B: 0.0015
+        self.eps_decay_rate = 0.0015
         # default explore value: 100000
         self.explore = 1000000       
         self.model = self._build_model()
@@ -94,11 +95,12 @@ class Agent:
                 t = self.target_model.predict(next_state)[0]
                 target[0][action] = reward + self.gamma * t[np.argmax(a)]
             history = self.model.fit(state, target, epochs=1, verbose=0)#, callbacks=[tensorboard])
-                
+            
+            # this decaying schedule decreases rather fast and after every step and almost linearly, in the traing_agent.py the epsilon is now changed after every episode instead
             # decay the epsilon as long it's larger then final epsilon threshold
-            if(self.epsilon>self.final_epsilon):
-                self.epsilon -= ((self.init_epsilon-self.final_epsilon)/self.explore)
-                #self.epsilon *= self.eps_decay_rate
+            #if(self.epsilon>self.final_epsilon):
+                #self.epsilon -= ((self.init_epsilon-self.final_epsilon)/self.explore)
+                ##self.epsilon *= self.eps_decay_rate
                 
     def load(self, file_name):
         self.model.load_weights(file_name)
