@@ -12,3 +12,4 @@
 *.ipynb_checkpoints
 /Exercise\ 1/data
 *.csv
+*.pyc
