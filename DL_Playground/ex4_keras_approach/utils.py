@@ -3,7 +3,7 @@ import numpy as np
 class Options:
     #
     disp_on = True # you might want to set it to False for speed
-    map_ind = 0
+    map_ind = 1
     change_tgt = False
     states_fil = "states.csv"
     labels_fil = "labels.csv"

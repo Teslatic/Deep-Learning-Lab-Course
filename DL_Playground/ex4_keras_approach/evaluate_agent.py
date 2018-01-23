@@ -93,7 +93,7 @@ next_state_with_history = np.copy(state_with_history)
 
 while nepisodes < TEST_EPISODES:
     if state.terminal or epi_step >= opt.early_stop: 
-        #disp_progress = True if nepisodes % SHOW_PROGRESS == 0 else False
+        disp_progress = True if nepisodes % SHOW_PROGRESS == 0 else False
         nepisodes += 1
         if state.terminal:
             nepisodes_solved_cnt +=1
@@ -154,7 +154,7 @@ ymin, ymax = 0, opt.early_stop
 
 
 plt.figure()
-plt.ylim(0,opt.early_stop)
+plt.ylim(0,opt.early_stop+20)
 plt.plot(epi_step_hist,label="DQN-Agent")
 plt.plot(astar.list_epi_steps,label="A*")
 plt.title("Comparison of needed Steps per Episode")
