@@ -11,3 +11,5 @@ __Exercise 1__: Neural Network from Scratch with Python2, SUBMISSION FOLDER
 __Exercise 2__: Introduction into Tensorflow, SUBMISSION FOLDER
 
 __Exercise 3__: Learning from A* by applying a CNN. SUBMISSION FOLDER. Team: Saniea Akhtar, Hendrik Vloet
+
+__Exercise 4__: Implementation of a DQN. SUBMISSION FOLDER. Team: Saniea Akhtar, Hendrik Vloet
