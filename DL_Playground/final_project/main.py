@@ -16,7 +16,7 @@ import keras
 weights_file = "network.h5"
 action_space = np.arange(3)
 input_shape = 2
-BATCH_SIZE = 32
+BATCH_SIZE = 64
 
 
 RUNS = 1
@@ -42,7 +42,7 @@ success = 0
 agent = DankAgent(input_shape,BATCH_SIZE, action_space)
 agent.model.summary()
 for ep in range(TRAINING_EPISODES):
-
+        acc_reward = 0
         state = env.reset().reshape(1,2)
         for t in range(TIMESTEPS):
             if ep % SHOW_PROGRESS == 0:
@@ -50,7 +50,7 @@ for ep in range(TRAINING_EPISODES):
             action = agent.act(state)
             next_state, reward, done, _ = env.step(action)
             next_state = next_state.reshape(1,2)
-
+            acc_reward += reward
             agent.remember(state, action, reward, next_state, done)
             agent.train()
 
@@ -58,6 +58,6 @@ for ep in range(TRAINING_EPISODES):
             if done:
                 break
         if t >= 199:
-            print("Failed to complete in epoch {}| Epsilon {:.2f}| memory length: {}".format(ep,agent.epsilon, len(agent.memory)))
+            print("Failed to complete in epoch {}| Reward {}| Epsilon {:.2f}| memory length: {}".format(ep,acc_reward,agent.epsilon, len(agent.memory)))
         else:
-            print("Completed in trial {}| Epsilon {:.2f}| memory length: {}".format(ep, agent.epsilon, len(agent.memory)))
+            print("Completed in trial {}| Reward {}| Epsilon {:.2f}| memory length: {}".format(ep, acc_reward, agent.epsilon, len(agent.memory)))

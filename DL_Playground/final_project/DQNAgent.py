@@ -12,22 +12,23 @@ import datetime
 
 class DankAgent():
     def __init__(self, input_shape, batch_size, action_space):
-        self.memory = deque(maxlen = 2000)
+        self.memory = deque(maxlen = 10000)
         self.input_shape = input_shape
         self.batch_size = batch_size
         self.action_space = action_space
-        self.gamma = 0.9
+        self.gamma = 0.99
         self.epsilon = 1.0
-        self.init_epsilon = 0.95
-        self.eps_decay_rate = 0.000001#45
-        self.decay_const = 0.05
+        self.init_epsilon = 1.0
+        self.eps_decay_rate = 0.000007#45
+        self.decay_const = 0.00
         self.learning_rate = 0.005
         self.model = self._build_model()
         self.target_model = self._build_model()
         self.cnt = 1
         self.update_target_marker = 1
-        self.t = 0
+        self.t = 1
         self.tau = 0.125
+        self.train_start = 5000
 
     def _build_model(self):
         model = Sequential()
@@ -44,11 +45,12 @@ class DankAgent():
 
 
     def update_target_model(self):
-        weights = self.model.get_weights()
-        target_weights = self.target_model.get_weights()
-        for i in range(len(target_weights)):
-            target_weights[i] = weights[i] * self.tau +target_weights[i] *(1 - self.tau)
-        self.target_model.set_weights(target_weights)
+        # weights = self.model.get_weights()
+        # target_weights = self.target_model.get_weights()
+        # for i in range(len(target_weights)):
+        #     target_weights[i] = weights[i] * self.tau +target_weights[i] *(1 - self.tau)
+        # self.target_model.set_weights(target_weights)
+        self.target_model.set_weights(self.model.get_weights())
 
     def act(self, state):
         pick = np.random.choice(['random','greedy'], p = [self.epsilon,1-self.epsilon])
@@ -58,13 +60,14 @@ class DankAgent():
         else:
             action_values = self.model.predict(state)
             action = np.argmax(action_values)
-        self.epsilon = self.init_epsilon*np.exp(-self.eps_decay_rate*self.t)+self.decay_const
-        self.t += 1
+        if len(self.memory) > self.train_start:
+            self.epsilon = self.init_epsilon*np.exp(-self.eps_decay_rate*self.t)+self.decay_const
+            self.t += 1
         return action
 
 
     def train(self):
-        if len(self.memory) < self.batch_size:
+        if len(self.memory) < self.train_start:
             return
 
         batch = random.sample(self.memory, self.batch_size)
@@ -102,7 +105,7 @@ class DankAgent():
 
 
 
-
+        self.model.fit(state_batch, q_target, batch_size = self.batch_size, epochs = 1, verbose = 0)
         # print(np.squeeze(state_batch))
         # for idx,val in enumerate(batch):
         #     state, action, reward, next_state, done = val
