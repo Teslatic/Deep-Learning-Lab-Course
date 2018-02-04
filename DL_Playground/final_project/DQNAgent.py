@@ -12,23 +12,23 @@ import datetime
 
 class DankAgent():
     def __init__(self, input_shape, batch_size, action_space):
-        self.memory = deque(maxlen = 10000)
+        self.memory = deque(maxlen = 30000)
         self.input_shape = input_shape
         self.batch_size = batch_size
         self.action_space = action_space
         self.gamma = 0.99
         self.epsilon = 1.0
         self.init_epsilon = 1.0
-        self.eps_decay_rate = 0.000007#45
+        self.eps_decay_rate = 0.000008#45
         self.decay_const = 0.00
-        self.learning_rate = 0.005
+        self.learning_rate = 0.001
         self.model = self._build_model()
         self.target_model = self._build_model()
         self.cnt = 1
-        self.update_target_marker = 1
+        self.update_target_marker = 200
         self.t = 1
         self.tau = 0.125
-        self.train_start = 5000
+        self.train_start = 1000
 
     def _build_model(self):
         model = Sequential()
@@ -36,7 +36,7 @@ class DankAgent():
         model.add(Dense(48, activation = 'relu',))
         model.add(Dense(24, activation = 'relu',))
         model.add(Dense(int(self.action_space.shape[0]), activation = 'linear' ,))
-        model.compile(loss = 'mse', optimizer = Adam(lr = self.learning_rate))
+        model.compile(loss = 'mse', optimizer = Nadam(lr = self.learning_rate))
 
         return model
 
@@ -52,17 +52,30 @@ class DankAgent():
         # self.target_model.set_weights(target_weights)
         self.target_model.set_weights(self.model.get_weights())
 
-    def act(self, state):
-        pick = np.random.choice(['random','greedy'], p = [self.epsilon,1-self.epsilon])
-        if pick == 'random':
-            # action = np.where(self.action_space==random.choice(self.action_space))[0]
-            action = random.choice(self.action_space)
+    def act(self, state, explore = True):
+        if explore:
+            pick = np.random.choice(['random','greedy'], p = [self.epsilon,1-self.epsilon])
+            if pick == 'random':
+                # action = np.where(self.action_space==random.choice(self.action_space))[0]
+                action = random.choice(self.action_space)
+            else:
+                action_values = self.model.predict(state)
+                action = np.argmax(action_values)
+            if len(self.memory) > self.train_start:
+                # print("test")
+                # print(self.epsilon)
+                # print(self.init_epsilon)
+                # print(self.eps_decay_rate)
+                # self.epsilon = self.init_epsilon*np.exp(-self.eps_decay_rate*self.t)#+self.decay_const
+                self.epsilon = 1.0*np.exp(-self.eps_decay_rate * self.t, None)[0][0]
+
+                # self.epsilon -= 0.000001
+                # print(self.epsilon)
+                self.t += 1
         else:
             action_values = self.model.predict(state)
             action = np.argmax(action_values)
-        if len(self.memory) > self.train_start:
-            self.epsilon = self.init_epsilon*np.exp(-self.eps_decay_rate*self.t)+self.decay_const
-            self.t += 1
+
         return action
 
 
