@@ -54,7 +54,7 @@ class MountainCarEnv(gym.Env):
                 else:
                     reward = -1.0
             else:
-                if reward_fn == 'vanilla':
+                if reward_fn == 'heuristic':
                     reward = 10
                 else:
                     reward = 0
