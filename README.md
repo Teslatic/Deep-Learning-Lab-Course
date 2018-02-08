@@ -13,3 +13,5 @@ __Exercise 2__: Introduction into Tensorflow, SUBMISSION FOLDER
 __Exercise 3__: Learning from A* by applying a CNN. SUBMISSION FOLDER. Team: Saniea Akhtar, Hendrik Vloet
 
 __Exercise 4__: Implementation of a DQN. SUBMISSION FOLDER. Team: Saniea Akhtar, Hendrik Vloet
+
+__Final Project__: Comparison of DQN and PG with the Mountain Car Environment, Team: Saniea Akhtar, Hendrik Vloet
